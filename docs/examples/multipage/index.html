@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件一覧 | アンケン帳</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* このページだけの指定 */
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 23px; }
+  .summary-item { border-radius: 20px; padding: 19px; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.14); }
+  .summary-item:nth-child(1) { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .summary-item:nth-child(2) { background: linear-gradient(135deg, #f6d365, #fda085); }
+  .summary-item:nth-child(3) { background: linear-gradient(135deg, #84fab0, #8fd3f4); }
+  .summary-item:nth-child(4) { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
+  .summary-label { font-size: 12px; font-weight: 700; opacity: 0.95; }
+  .summary-value { font-size: 28px; font-weight: 800; }
+  .filters { display: flex; gap: 11px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filters .select { width: 170px; border-radius: 999px; }
+  .filters .input { width: 240px; border-radius: 999px; }
+  .btn-primary { border-radius: 999px; padding: 12px 24px; }
+  @media (max-width: 640px) { .summary { grid-template-columns: repeat(2, 1fr); } .filters .select, .filters .input { width: 100%; } }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <a class="app-logo" href="index.html">📁 アンケン帳</a>
+  <nav class="app-nav" aria-label="メイン">
+    <a href="index.html" class="is-current" aria-current="page">案件</a>
+    <a href="detail.html">案件の詳細</a>
+    <a href="settings.html">設定</a>
+    <a href="states.html">状態一覧</a>
+  </nav>
+  <span class="app-user">👤 森デザイン室</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">🚀 案件ダッシュボード</h1>
+      <p class="page-sub">すべての案件をひと目でチェック!今日も頑張りましょう ✨</p>
+    </div>
+    <button type="button" class="btn btn-primary" data-modal-open="newProject">➕ 新しい案件</button>
+  </div>
+
+  <div class="summary">
+    <div class="summary-item"><div class="summary-label">📌 進行中</div><div class="summary-value">4</div></div>
+    <div class="summary-item"><div class="summary-label">👀 確認待ち</div><div class="summary-value">2</div></div>
+    <div class="summary-item"><div class="summary-label">✅ 今月の完了</div><div class="summary-value">3</div></div>
+    <div class="summary-item"><div class="summary-label">💰 今月の請求予定</div><div class="summary-value">¥1,284,000</div></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📋 案件リスト</h2>
+    <div class="filters">
+      <select class="select" id="statusFilter" aria-label="状態で絞り込む">
+        <option value="all">すべての状態</option>
+        <option value="progress">進行中</option>
+        <option value="review">確認待ち</option>
+        <option value="done">完了</option>
+        <option value="hold">保留</option>
+      </select>
+      <input type="search" class="input" id="keyword" placeholder="🔍 検索..." aria-label="案件名や取引先で検索">
+      <span class="page-sub" id="resultCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>案件名</th><th>取引先</th><th>状態</th><th>納期</th><th class="num">金額</th></tr>
+        </thead>
+        <tbody id="projectRows">
+          <tr data-status="progress"><td><a href="detail.html">店舗サイトのリニューアル</a></td><td>かもめベーカリー</td><td><span class="badge badge-progress">進行中</span></td><td>12/18</td><td class="num">¥480,000</td></tr>
+          <tr data-status="review"><td><a href="detail.html">採用パンフレット</a></td><td>北栄運輸</td><td><span class="badge badge-review">確認待ち</span></td><td>11/28</td><td class="num">¥220,000</td></tr>
+          <tr data-status="progress"><td><a href="detail.html">年賀状デザイン</a></td><td>三好歯科</td><td><span class="badge badge-progress">進行中</span></td><td>12/05</td><td class="num">¥45,000</td></tr>
+          <tr data-status="progress"><td><a href="detail.html">商品パッケージ(焼き菓子3種)</a></td><td>かもめベーカリー</td><td><span class="badge badge-progress">進行中</span></td><td>01/20</td><td class="num">¥360,000</td></tr>
+          <tr data-status="review"><td><a href="detail.html">会社案内の改訂</a></td><td>大和測量</td><td><span class="badge badge-review">確認待ち</span></td><td>12/01</td><td class="num">¥150,000</td></tr>
+          <tr data-status="done"><td><a href="detail.html">秋のセール告知チラシ</a></td><td>はなまる商店街</td><td><span class="badge badge-done">完了</span></td><td>11/04</td><td class="num">¥64,000</td></tr>
+          <tr data-status="hold"><td><a href="detail.html">ロゴのリデザイン</a></td><td>北栄運輸</td><td><span class="badge badge-hold">保留</span></td><td>未定</td><td class="num">¥300,000</td></tr>
+          <tr data-status="progress"><td><a href="detail.html">診察券と封筒</a></td><td>三好歯科</td><td><span class="badge badge-progress">進行中</span></td><td>12/12</td><td class="num">¥38,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" id="emptyState">😢 データがありません</p>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="newProject">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="newProjectTitle">
+    <h2 class="modal-title" id="newProjectTitle">✨ 新しい案件を作成</h2>
+    <form data-validate data-success="案件を追加しました" novalidate>
+      <div class="field">
+        <label class="label" for="projectName">案件名</label>
+        <input class="input" id="projectName" name="projectName" type="text" required>
+        <p class="error" id="projectNameError" hidden>入力してください</p>
+      </div>
+      <div class="field">
+        <label class="label" for="projectClient">取引先</label>
+        <input class="input" id="projectClient" name="projectClient" type="text" required>
+        <p class="error" id="projectClientError" hidden>入力してください</p>
+      </div>
+      <div class="field">
+        <label class="label" for="projectDue">納期</label>
+        <input class="input" id="projectDue" name="projectDue" type="date">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-modal-close>キャンセル</button>
+        <button type="submit" class="btn btn-primary">作成する 🚀</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="app.js"></script>
+<script src="toggle-snippet.js" data-polish-href="polish.css"></script>
+</body>
+</html>

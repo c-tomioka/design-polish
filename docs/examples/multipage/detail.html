@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>店舗サイトのリニューアル | アンケン帳</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* このページだけの指定 */
+  .page-title { font-size: 30px; background: linear-gradient(135deg, #6366f1, #d946ef); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .meta-item { background: #fff; border-radius: 16px; padding: 15px 17px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+  .meta-label { font-size: 11px; color: #a1a1aa; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .meta-value { font-size: 18px; font-weight: 800; margin-top: 2px; }
+  .btn { border-radius: 8px; padding: 9px 16px; font-size: 13px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .task { display: flex; align-items: center; gap: 12px; padding: 13px 4px; border-bottom: 1px solid #f1f1f4; font-size: 14px; }
+  .task input { width: 18px; height: 18px; accent-color: #8b5cf6; }
+  .task-due { margin-left: auto; color: #a1a1aa; font-size: 12px; white-space: nowrap; }
+  .log { padding: 12px 0; border-bottom: 1px solid #f1f1f4; font-size: 14px; }
+  .log time { display: block; font-size: 12px; color: #a1a1aa; }
+  .progress { height: 10px; background: #ede9fe; border-radius: 999px; overflow: hidden; margin: 6px 0 18px; }
+  .progress span { display: block; height: 100%; width: 40%; background: linear-gradient(90deg, #6366f1, #d946ef); border-radius: 999px; }
+  @media (max-width: 640px) { .meta { grid-template-columns: repeat(2, 1fr); } .page-title { font-size: 22px; } }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <a class="app-logo" href="index.html">📁 アンケン帳</a>
+  <nav class="app-nav" aria-label="メイン">
+    <a href="index.html">案件</a>
+    <a href="detail.html" class="is-current" aria-current="page">案件の詳細</a>
+    <a href="settings.html">設定</a>
+    <a href="states.html">状態一覧</a>
+  </nav>
+  <span class="app-user">👤 森デザイン室</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <p class="page-sub"><a href="index.html">← 案件一覧に戻る</a></p>
+      <h1 class="page-title">店舗サイトのリニューアル</h1>
+      <p class="page-sub">かもめベーカリー <span class="badge badge-progress">進行中</span></p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" data-modal-open="invoiceModal">💰 請求書を作成</button>
+      <button type="button" class="btn btn-primary" data-modal-open="noteModal">📝 メモを追加</button>
+      <button type="button" class="btn btn-danger" data-modal-open="deleteModal">🗑️ 削除</button>
+    </div>
+  </div>
+
+  <div class="meta">
+    <div class="meta-item"><div class="meta-label">Deadline</div><div class="meta-value">12/18</div></div>
+    <div class="meta-item"><div class="meta-label">Budget</div><div class="meta-value">¥480,000</div></div>
+    <div class="meta-item"><div class="meta-label">Hours</div><div class="meta-value">26.5h</div></div>
+    <div class="meta-item"><div class="meta-label">Owner</div><div class="meta-value">森</div></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs" role="tablist" data-tabs>
+      <button type="button" class="tab is-active" role="tab" aria-selected="true" data-tab="tasks">✅ タスク</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-tab="log">🕒 やりとり</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-tab="files">📎 ファイル</button>
+    </div>
+
+    <div class="tab-panel is-active" data-tab-panel="tasks">
+      <p class="page-sub">進捗 2 / 5</p>
+      <div class="progress"><span></span></div>
+      <label class="task"><input type="checkbox" checked> ヒアリングと現行サイトの確認 <span class="task-due">11/06</span></label>
+      <label class="task"><input type="checkbox" checked> サイトマップと見積もり <span class="task-due">11/13</span></label>
+      <label class="task"><input type="checkbox"> トップページのデザイン案 <span class="task-due">11/27</span></label>
+      <label class="task"><input type="checkbox"> 下層ページと実装 <span class="task-due">12/11</span></label>
+      <label class="task"><input type="checkbox"> 公開作業と引き継ぎ <span class="task-due">12/18</span></label>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="log">
+      <div class="log"><time>11/12 16:40</time>見積もりを送付。パン教室のページは今回の範囲に含めないことで合意。</div>
+      <div class="log"><time>11/06 10:00</time>店頭でヒアリング。写真は先方が12月第1週までに用意する。</div>
+      <div class="log"><time>10/30 14:15</time>問い合わせフォームから依頼を受ける。</div>
+    </div>
+
+    <div class="tab-panel" data-tab-panel="files">
+      <p class="empty is-shown">😢 データがありません</p>
+    </div>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="invoiceModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="invoiceTitle">
+    <h2 class="modal-title" id="invoiceTitle">💰 請求書を作成</h2>
+    <form data-validate data-success="請求書の下書きを作りました" novalidate>
+      <div class="field">
+        <label class="label" for="invoiceAmount">金額(税抜)</label>
+        <input class="input" id="invoiceAmount" name="invoiceAmount" type="text" inputmode="numeric" value="480000" required>
+        <p class="error" id="invoiceAmountError" hidden>入力してください</p>
+      </div>
+      <div class="field">
+        <label class="label" for="invoiceEmail">送付先メールアドレス</label>
+        <input class="input" id="invoiceEmail" name="invoiceEmail" type="email" required>
+        <p class="error" id="invoiceEmailError" hidden>無効な入力です</p>
+        <p class="hint">請求書のPDFをこのアドレスに送ります</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-modal-close>キャンセル</button>
+        <button type="submit" class="btn btn-primary">作成する ✨</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="noteModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="noteTitle">
+    <h2 class="modal-title" id="noteTitle">📝 メモを追加</h2>
+    <form data-validate data-success="メモを追加しました" novalidate>
+      <div class="field">
+        <label class="label" for="noteText">内容</label>
+        <textarea class="textarea" id="noteText" name="noteText" rows="4" required></textarea>
+        <p class="error" id="noteTextError" hidden>入力してください</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-modal-close>キャンセル</button>
+        <button type="submit" class="btn btn-primary">追加する</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="deleteTitle">
+    <h2 class="modal-title" id="deleteTitle">⚠️ 本当に削除しますか?</h2>
+    <p>この操作は取り消せません!</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-modal-close>キャンセル</button>
+      <button type="button" class="btn btn-danger" data-modal-close>OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="app.js"></script>
+<script src="toggle-snippet.js" data-polish-href="polish.css"></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ベントーデスク | 受注管理ダッシュボード</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f5 100%); color: #1a1a1a; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar { width: 250px; background: linear-gradient(180deg, #4f46e5 0%, #7c3aed 100%); color: #fff; padding: 22px 15px; flex-shrink: 0; box-shadow: 4px 0 30px rgba(79,70,229,0.3); }
+  .brand { font-size: 21px; font-weight: 800; margin-bottom: 30px; padding: 0 9px; }
+  .side-link { display: flex; align-items: center; gap: 11px; padding: 13px 15px; border-radius: 14px; color: rgba(255,255,255,0.8); text-decoration: none; font-weight: 600; font-size: 15px; margin-bottom: 5px; transition: all 0.3s; }
+  .side-link:hover { background: rgba(255,255,255,0.15); transform: translateX(5px); }
+  .side-link.active { background: rgba(255,255,255,0.25); color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+  .side-badge { margin-left: auto; background: #f43f5e; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 800; }
+  .upgrade { margin-top: 35px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 18px; padding: 18px; text-align: center; font-size: 13px; }
+  .upgrade button { margin-top: 11px; background: #fff; color: #7c3aed; border: none; padding: 9px 17px; border-radius: 999px; font-weight: 800; cursor: pointer; }
+
+  .main { flex: 1; padding: 27px 33px; min-width: 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; gap: 15px; flex-wrap: wrap; }
+  .topbar h1 { font-size: 27px; font-weight: 800; background: linear-gradient(135deg, #4f46e5, #7c3aed); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .topbar p { color: #9ca3af; font-size: 14px; margin-top: 3px; }
+  .side-toggle { display: none; background: #fff; border: none; border-radius: 12px; width: 42px; height: 42px; font-size: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+  .top-actions { display: flex; gap: 10px; }
+  .btn { border: none; padding: 11px 21px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; font-family: inherit; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 6px 20px rgba(124,58,237,0.4); }
+  .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+  .btn-orange { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 19px; margin-bottom: 26px; }
+  .kpi { border-radius: 22px; padding: 23px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden; }
+  .kpi:hover { transform: translateY(-6px) scale(1.02); }
+  .kpi::after { content: ''; position: absolute; width: 120px; height: 120px; background: rgba(255,255,255,0.15); border-radius: 50%; top: -40px; right: -30px; }
+  .kpi-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .kpi-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+  .kpi-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+  .kpi-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+  .kpi-icon { font-size: 29px; margin-bottom: 9px; }
+  .kpi-label { font-size: 13px; opacity: 0.9; font-weight: 600; }
+  .kpi-value { font-size: 31px; font-weight: 800; margin: 3px 0; }
+  .kpi-diff { font-size: 12px; background: rgba(255,255,255,0.25); display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; }
+
+  .panel { background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-radius: 24px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5); }
+  .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 19px; flex-wrap: wrap; gap: 13px; }
+  .panel-head h2 { font-size: 19px; font-weight: 800; }
+  .tools { display: flex; gap: 11px; flex-wrap: wrap; align-items: center; }
+  .tabs { display: flex; gap: 7px; background: #f3f4f6; padding: 5px; border-radius: 14px; }
+  .tab { border: none; background: none; padding: 8px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; color: #9ca3af; cursor: pointer; font-family: inherit; transition: all 0.3s; }
+  .tab.active { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 4px 12px rgba(124,58,237,0.4); }
+  .search { padding: 10px 17px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 14px; width: 220px; outline: none; font-family: inherit; }
+  .search:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,0.15); }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0 9px; min-width: 720px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #b0b5c0; padding: 0 15px 5px; font-weight: 800; }
+  td { background: #fff; padding: 15px; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  tr td:first-child { border-radius: 14px 0 0 14px; font-weight: 700; color: #7c3aed; }
+  tr td:last-child { border-radius: 0 14px 14px 0; }
+  tbody tr { transition: all 0.3s; }
+  tbody tr:hover { transform: scale(1.01); }
+  .pill { display: inline-block; padding: 5px 13px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+  .pill-new { background: #dbeafe; color: #3b82f6; }
+  .pill-cooking { background: #fef3c7; color: #f59e0b; }
+  .pill-delivering { background: #ede9fe; color: #8b5cf6; }
+  .pill-done { background: #d1fae5; color: #10b981; }
+  .detail-btn { background: #f3f4f6; border: none; padding: 7px 14px; border-radius: 9px; font-weight: 700; font-size: 12px; color: #7c3aed; cursor: pointer; font-family: inherit; }
+  .empty { display: none; text-align: center; padding: 45px; color: #b0b5c0; font-size: 15px; }
+  .empty.show { display: block; }
+  .count { color: #b0b5c0; font-size: 13px; margin-top: 13px; }
+
+  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border-radius: 28px; padding: 33px; width: 460px; max-width: 100%; box-shadow: 0 30px 80px rgba(0,0,0,0.3); animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-size: 22px; font-weight: 800; margin-bottom: 17px; }
+  .modal dl { display: grid; grid-template-columns: 90px 1fr; gap: 11px; font-size: 14px; margin-bottom: 23px; }
+  .modal dt { color: #9ca3af; font-weight: 700; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; z-index: 90; transition: left 0.3s; }
+    .sidebar.open { left: 0; }
+    .side-toggle { display: block; }
+    .main { padding: 18px 15px; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .search { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">🍱 ベントーデスク</div>
+    <a href="#" class="side-link active">📊 ダッシュボード</a>
+    <a href="#orders" class="side-link">📦 注文 <span class="side-badge">NEW</span></a>
+    <a href="#" class="side-link">🍙 メニュー</a>
+    <a href="#" class="side-link">🚚 配達ルート</a>
+    <a href="#" class="side-link">👥 お客様</a>
+    <a href="#" class="side-link">⚙️ 設定</a>
+    <div class="upgrade">
+      🚀 Proプランにアップグレードして、ビジネスを加速しよう!
+      <button type="button">アップグレード ✨</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;gap:13px;align-items:center">
+        <button class="side-toggle" id="sideToggle" aria-label="メニューを開く" aria-expanded="false">☰</button>
+        <div>
+          <h1>おかえりなさい、山本さん 👋</h1>
+          <p>今日も素晴らしい一日にしましょう!ビジネスの状況をチェック ✨</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-green" type="button" id="exportBtn">📥 エクスポート</button>
+        <button class="btn btn-orange" type="button" id="printBtn">🖨️ 配達票を印刷</button>
+        <button class="btn btn-primary" type="button" id="newOrderBtn">➕ 新規注文</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi kpi-1"><div class="kpi-icon">💰</div><div class="kpi-label">本日の売上</div><div class="kpi-value">¥86,400</div><span class="kpi-diff">↑ 12.5% 前日比</span></div>
+      <div class="kpi kpi-2"><div class="kpi-icon">📦</div><div class="kpi-label">本日の注文</div><div class="kpi-value">48件</div><span class="kpi-diff">↑ 6件 前日比</span></div>
+      <div class="kpi kpi-3"><div class="kpi-icon">🍳</div><div class="kpi-label">調理待ち</div><div class="kpi-value">7件</div><span class="kpi-diff">11:30 配達分</span></div>
+      <div class="kpi kpi-4"><div class="kpi-icon">⭐</div><div class="kpi-label">お客様満足度</div><div class="kpi-value">4.9</div><span class="kpi-diff">↑ 0.2 先月比</span></div>
+    </div>
+
+    <section class="panel" id="orders">
+      <div class="panel-head">
+        <h2>📋 本日の注文一覧</h2>
+        <div class="tools">
+          <div class="tabs" role="tablist" aria-label="状態で絞り込む">
+            <button class="tab active" role="tab" aria-selected="true" data-filter="all">すべて</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="new">受付</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="cooking">調理中</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="delivering">配達中</button>
+            <button class="tab" role="tab" aria-selected="false" data-filter="done">完了</button>
+          </div>
+          <input type="search" class="search" id="search" placeholder="🔍 検索..." aria-label="届け先や注文番号で検索">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>注文番号</th><th>届け先</th><th>内容</th><th>配達時刻</th><th>金額</th><th>状態</th><th></th></tr>
+          </thead>
+          <tbody id="orderRows">
+            <tr data-status="cooking" data-id="B-1048" data-to="みどり設計事務所" data-items="日替わり弁当 ×12" data-time="11:30" data-price="¥9,600" data-note="箸・おしぼり不要"><td>B-1048</td><td>みどり設計事務所</td><td>日替わり弁当 ×12</td><td>11:30</td><td>¥9,600</td><td><span class="pill pill-cooking">🍳 調理中</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="cooking" data-id="B-1047" data-to="港南クリニック" data-items="幕の内 ×6、お茶 ×6" data-time="11:30" data-price="¥6,900" data-note="裏口の受付に届ける"><td>B-1047</td><td>港南クリニック</td><td>幕の内 ×6、お茶 ×6</td><td>11:30</td><td>¥6,900</td><td><span class="pill pill-cooking">🍳 調理中</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="new" data-id="B-1046" data-to="青葉第二小学校 職員室" data-items="日替わり弁当 ×20" data-time="12:00" data-price="¥16,000" data-note="領収書の宛名:青葉第二小学校"><td>B-1046</td><td>青葉第二小学校 職員室</td><td>日替わり弁当 ×20</td><td>12:00</td><td>¥16,000</td><td><span class="pill pill-new">🆕 受付</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="delivering" data-id="B-1045" data-to="北沢工務店" data-items="から揚げ弁当 ×8" data-time="11:00" data-price="¥6,800" data-note="現場事務所(2階)"><td>B-1045</td><td>北沢工務店</td><td>から揚げ弁当 ×8</td><td>11:00</td><td>¥6,800</td><td><span class="pill pill-delivering">🚚 配達中</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="new" data-id="B-1044" data-to="さくら保育園" data-items="幕の内 ×10" data-time="12:15" data-price="¥9,500" data-note="アレルギー対応:えび抜き2食"><td>B-1044</td><td>さくら保育園</td><td>幕の内 ×10</td><td>12:15</td><td>¥9,500</td><td><span class="pill pill-new">🆕 受付</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="done" data-id="B-1043" data-to="東口会計事務所" data-items="日替わり弁当 ×5" data-time="10:30" data-price="¥4,000" data-note="なし"><td>B-1043</td><td>東口会計事務所</td><td>日替わり弁当 ×5</td><td>10:30</td><td>¥4,000</td><td><span class="pill pill-done">✅ 完了</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+            <tr data-status="done" data-id="B-1042" data-to="市民ホール 管理室" data-items="会議用弁当 ×15" data-time="10:00" data-price="¥18,000" data-note="会議室Bに直接搬入"><td>B-1042</td><td>市民ホール 管理室</td><td>会議用弁当 ×15</td><td>10:00</td><td>¥18,000</td><td><span class="pill pill-done">✅ 完了</span></td><td><button class="detail-btn" type="button">詳細</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="empty" id="empty">😢 データがありません</div>
+      <div class="count" id="count"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">📦 注文の詳細</h3>
+    <dl>
+      <dt>注文番号</dt><dd id="mId"></dd>
+      <dt>届け先</dt><dd id="mTo"></dd>
+      <dt>内容</dt><dd id="mItems"></dd>
+      <dt>配達時刻</dt><dd id="mTime"></dd>
+      <dt>金額</dt><dd id="mPrice"></dd>
+      <dt>メモ</dt><dd id="mNote"></dd>
+    </dl>
+    <div class="modal-actions">
+      <button class="btn btn-orange" type="button" id="modalPrint">🖨️ 印刷</button>
+      <button class="btn btn-primary" type="button" id="modalClose">OK 👍</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#orderRows tr'));
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var search = document.getElementById('search');
+  var empty = document.getElementById('empty');
+  var count = document.getElementById('count');
+  var current = 'all';
+
+  // 状態タブと検索による絞り込み
+  function applyFilter() {
+    var q = search.value.trim().toLowerCase();
+    var shown = 0;
+    rows.forEach(function (r) {
+      var okStatus = current === 'all' || r.dataset.status === current;
+      var okText = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+      var visible = okStatus && okText;
+      r.style.display = visible ? '' : 'none';
+      if (visible) shown++;
+    });
+    empty.classList.toggle('show', shown === 0);
+    count.textContent = shown + '件を表示中 / 全' + rows.length + '件';
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+      t.classList.add('active');
+      t.setAttribute('aria-selected', 'true');
+      current = t.dataset.filter;
+      applyFilter();
+    });
+  });
+  search.addEventListener('input', applyFilter);
+  applyFilter();
+
+  // 詳細モーダル
+  var modalBg = document.getElementById('modalBg');
+  var lastFocus = null;
+  function openModal(r) {
+    document.getElementById('mId').textContent = r.dataset.id;
+    document.getElementById('mTo').textContent = r.dataset.to;
+    document.getElementById('mItems').textContent = r.dataset.items;
+    document.getElementById('mTime').textContent = r.dataset.time;
+    document.getElementById('mPrice').textContent = r.dataset.price;
+    document.getElementById('mNote').textContent = r.dataset.note;
+    lastFocus = document.activeElement;
+    modalBg.classList.add('open');
+    document.getElementById('modalClose').focus();
+  }
+  function closeModal() {
+    modalBg.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  document.getElementById('orderRows').addEventListener('click', function (e) {
+    var b = e.target.closest('.detail-btn');
+    if (b) openModal(b.closest('tr'));
+  });
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modalBg.addEventListener('click', function (e) { if (e.target === modalBg) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  // サイドバーの開閉(狭い画面)
+  var sidebar = document.getElementById('sidebar');
+  var sideToggle = document.getElementById('sideToggle');
+  sideToggle.addEventListener('click', function () {
+    var open = sidebar.classList.toggle('open');
+    sideToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

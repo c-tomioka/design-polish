@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>豆の定期便 | 峠の焙煎所</title>
+<style>
+  :root {
+    --bg: #f6f3ec;
+    --surface: #fffdf8;
+    --line: #d9d3c4;
+    --text: #26221c;
+    --text-sub: #5d564a;
+    --text-note: #a39c8d;
+    --accent: #7a3b1e;
+    --accent-weak: #efe3d8;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px; --space-24: 96px;
+    --font: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --font-num: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.8; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 var(--space-6); }
+  .site-head { display: flex; justify-content: space-between; align-items: baseline; padding: var(--space-6) 0; border-bottom: 1px solid var(--line); }
+  .site-name { font-size: 16px; font-weight: 700; letter-spacing: 0.08em; color: var(--text); text-decoration: none; }
+  .site-nav { display: flex; gap: var(--space-6); font-size: 14px; }
+  .site-nav a { color: var(--text-sub); text-decoration: none; }
+  .site-nav a[aria-current="page"] { color: var(--text); border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
+
+  .intro { padding: var(--space-16) 0 var(--space-12); max-width: 34em; }
+  .intro h1 { margin: 0 0 var(--space-4); font-size: 32px; line-height: 1.4; font-weight: 700; letter-spacing: 0.02em; }
+  .intro p { margin: 0; color: var(--text-sub); }
+
+  .cycle { display: flex; align-items: center; gap: var(--space-4); margin-bottom: 22px; flex-wrap: wrap; }
+  .cycle-label { font-size: 14px; color: var(--text-sub); }
+  .cycle-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .cycle-switch button { border: 0; background: transparent; padding: var(--space-2) var(--space-4); min-height: 44px; font: inherit; font-size: 14px; color: var(--text-sub); cursor: pointer; }
+  .cycle-switch button + button { border-left: 1px solid var(--line); }
+  .cycle-switch button[aria-pressed="true"] { background: var(--text); color: var(--surface); }
+  .cycle-note { font-size: 13px; color: var(--text-note); }
+
+  .plans { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); }
+  .plans th, .plans td { padding: var(--space-4) var(--space-6); text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+  .plans tr:last-child th, .plans tr:last-child td { border-bottom: 0; }
+  .plans thead th { font-size: 13px; font-weight: 400; color: var(--text-sub); background: var(--bg); }
+  .plans tbody th { font-weight: 700; white-space: nowrap; }
+  .plans .amount { font-family: var(--font-num); font-size: 20px; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .plans .amount small { font-family: var(--font); font-size: 12px; color: var(--text-note); margin-left: 2px; }
+  .plans .desc { color: var(--text-sub); font-size: 14px; }
+  .plans .pick { text-align: right; white-space: nowrap; }
+  .plans tr.is-recommended { background: var(--accent-weak); }
+  .tag { display: inline-block; margin-left: var(--space-2); font-size: 12px; font-weight: 400; color: var(--accent); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--space-6); border-radius: 4px; font: inherit; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+  .btn-primary:hover { background: #63301a; }
+  .btn-quiet { background: transparent; color: var(--text); border: 1px solid var(--line); }
+
+  .selected { margin: var(--space-6) 0 0; padding: var(--space-4) var(--space-6); border-left: 3px solid var(--accent); background: var(--surface); display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+  .selected p { margin: 0; }
+  .selected strong { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); padding: var(--space-16) 0; }
+  .about h2 { margin: 0 0 var(--space-3); font-size: 18px; line-height: 1.5; }
+  .about p, .about li { color: var(--text-sub); font-size: 15px; }
+  .about p { margin: 0 0 var(--space-4); }
+  .about ul { margin: 0; padding-left: 1.2em; }
+  .schedule { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .schedule td { padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+  .schedule td:last-child { text-align: right; font-family: var(--font-num); font-variant-numeric: tabular-nums; color: var(--text-sub); }
+
+  .qa { padding: 0 0 var(--space-16); max-width: 40em; }
+  .qa h2 { margin: 0 0 var(--space-4); font-size: 18px; }
+  .qa details { border-top: 1px solid var(--line); }
+  .qa details:last-child { border-bottom: 1px solid var(--line); }
+  .qa summary { padding: var(--space-4) 0; font-weight: 700; cursor: pointer; }
+  .qa details p { margin: 0 0 var(--space-4); color: var(--text-sub); font-size: 15px; }
+
+  .site-foot { border-top: 1px solid var(--line); padding: var(--space-6) 0 var(--space-12); font-size: 13px; color: var(--text-note); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); }
+
+  @media (max-width: 720px) {
+    .intro { padding: var(--space-12) 0 var(--space-8); }
+    .intro h1 { font-size: 26px; }
+    .plans thead { display: none; }
+    .plans, .plans tbody, .plans tr, .plans th, .plans td { display: block; }
+    .plans tr { padding: var(--space-4); border-bottom: 1px solid var(--line); }
+    .plans tr:last-child { border-bottom: 0; }
+    .plans th, .plans td { padding: 0; border: 0; }
+    .plans .amount { text-align: left; margin: var(--space-1) 0; }
+    .plans .pick { text-align: left; margin-top: var(--space-3); }
+    .about { grid-template-columns: 1fr; gap: var(--space-8); padding: var(--space-12) 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site-head">
+    <a class="site-name" href="#top">峠の焙煎所</a>
+    <nav class="site-nav" aria-label="サイト内">
+      <a href="#beans">豆の一覧</a>
+      <a href="#top" aria-current="page">定期便</a>
+      <a href="#shop">店舗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <h1>焙煎した週に届く、豆の定期便</h1>
+      <p>毎週火曜に焙煎し、水曜に発送します。届く豆は月ごとに店主が選びます。量と届く間隔だけ決めてください。</p>
+    </section>
+
+    <section aria-labelledby="planHeading">
+      <h2 id="planHeading" hidden>プランを選ぶ</h2>
+      <div class="cycle">
+        <span class="cycle-label" id="cycleLabel">届く間隔</span>
+        <div class="cycle-switch" role="group" aria-labelledby="cycleLabel">
+          <button type="button" data-cycle="monthly" aria-pressed="true">月1回</button>
+          <button type="button" data-cycle="biweekly" aria-pressed="false">2週に1回</button>
+        </div>
+        <span class="cycle-note">間隔はいつでも変えられます</span>
+      </div>
+
+      <table class="plans">
+        <thead>
+          <tr><th scope="col">量</th><th scope="col">目安</th><th scope="col">1回あたり(税込・送料込)</th><th scope="col"><span hidden>選ぶ</span></th></tr>
+        </thead>
+        <tbody>
+          <tr data-plan="100" data-monthly="1380" data-biweekly="1280">
+            <th scope="row">100g</th>
+            <td class="desc">週末に1〜2杯。約7杯分</td>
+            <td class="amount"><span class="price">1,380</span><small>円</small></td>
+            <td class="pick"><button type="button" class="btn btn-quiet" data-pick="100">100gを選ぶ</button></td>
+          </tr>
+          <tr data-plan="200" data-monthly="2480" data-biweekly="2280" class="is-recommended">
+            <th scope="row">200g<span class="tag">いちばん選ばれています</span></th>
+            <td class="desc">毎朝1杯。約14杯分</td>
+            <td class="amount"><span class="price">2,480</span><small>円</small></td>
+            <td class="pick"><button type="button" class="btn btn-quiet" data-pick="200">200gを選ぶ</button></td>
+          </tr>
+          <tr data-plan="400" data-monthly="4480" data-biweekly="4180">
+            <th scope="row">400g</th>
+            <td class="desc">家族で毎日、または職場用。約28杯分</td>
+            <td class="amount"><span class="price">4,480</span><small>円</small></td>
+            <td class="pick"><button type="button" class="btn btn-quiet" data-pick="400">400gを選ぶ</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="selected" id="selected" aria-live="polite">
+        <p id="selectedText">量を選ぶと、ここに1回あたりの金額が出ます。</p>
+        <a class="btn btn-primary" id="orderLink" href="#order" aria-disabled="true">定期便を申し込む</a>
+      </div>
+    </section>
+
+    <section class="about">
+      <div>
+        <h2>届くもの</h2>
+        <p>その月の豆を1種類、豆のままか挽いた状態でお届けします。産地と焙煎度、おすすめの淹れ方を書いたカードを同封します。</p>
+        <ul>
+          <li>挽き方は申し込み時に選べます(豆のまま/中挽き/細挽き)</li>
+          <li>ポストに届く厚さ3cmの箱で発送します</li>
+        </ul>
+      </div>
+      <div>
+        <h2>12月の予定</h2>
+        <table class="schedule">
+          <tr><td>焙煎</td><td>12/01(火)</td></tr>
+          <tr><td>発送</td><td>12/02(水)</td></tr>
+          <tr><td>お届けの目安</td><td>12/03〜12/05</td></tr>
+          <tr><td>今月の締め切り</td><td>11/29(日)</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="qa">
+      <h2>よくある質問</h2>
+      <details>
+        <summary>休んだり、やめたりできますか</summary>
+        <p>できます。次回の焙煎日の2日前(日曜)までにマイページで手続きすれば、その回から止まります。解約の手数料はありません。</p>
+      </details>
+      <details>
+        <summary>豆の種類は選べますか</summary>
+        <p>定期便では選べません。深煎りが苦手など好みがあれば、申し込み時の備考に書いてください。できる範囲で合わせます。</p>
+      </details>
+      <details>
+        <summary>支払い方法は</summary>
+        <p>クレジットカードのみです。発送日に決済します。</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span>峠の焙煎所 長野県上田市</span>
+    <span>火〜土 10:00–17:00</span>
+  </footer>
+</div>
+
+<script>
+  var cycle = 'monthly';
+  var picked = null;
+  var rows = document.querySelectorAll('.plans tbody tr');
+  var selectedText = document.getElementById('selectedText');
+  var orderLink = document.getElementById('orderLink');
+  var cycleNames = { monthly: '月1回', biweekly: '2週に1回' };
+
+  function yen(n) { return Number(n).toLocaleString('ja-JP'); }
+
+  function render() {
+    rows.forEach(function (r) {
+      r.querySelector('.price').textContent = yen(r.dataset[cycle]);
+    });
+    if (picked) {
+      var row = document.querySelector('.plans tr[data-plan="' + picked + '"]');
+      selectedText.innerHTML = picked + 'g を ' + cycleNames[cycle] + '、1回 <strong>' + yen(row.dataset[cycle]) + '</strong> 円';
+      orderLink.setAttribute('aria-disabled', 'false');
+      orderLink.href = '#order?plan=' + picked + '&cycle=' + cycle;
+    }
+  }
+
+  document.querySelectorAll('.cycle-switch button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      cycle = b.dataset.cycle;
+      document.querySelectorAll('.cycle-switch button').forEach(function (x) {
+        x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+      });
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-pick]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      picked = b.dataset.pick;
+      render();
+    });
+  });
+
+  orderLink.addEventListener('click', function (e) {
+    if (orderLink.getAttribute('aria-disabled') === 'true') e.preventDefault();
+  });
+</script>
+</body>
+</html>

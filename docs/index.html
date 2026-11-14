@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>design-polish 見本 | 修正前後の比較</title>
+<meta name="description" content="design-polish スキルで画面がどう変わるかを、同じ位置で切り替えて見比べるビューア。">
+<style>
+  :root {
+    --bar: #1d1c1a; --bar-line: #3a3833; --bar-text: #f3f1ec; --bar-muted: #b5b1a8;
+    --stage: #e4e1d9; --frame-line: #c2bdb1; --on: #f3f1ec; --on-text: #1d1c1a; --focus: #8fc7ab;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; display: grid; grid-template-rows: auto 1fr; height: 100vh; height: 100dvh;
+    background: var(--stage); color: var(--bar-text);
+    font: 14px/1.6 system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  }
+  button, a, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  .bar { background: var(--bar); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 12px 20px; }
+  .row + .row { border-top: 1px solid var(--bar-line); }
+
+  /* 1段目:見本を選ぶ */
+  .brand { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 700; white-space: nowrap; }
+  .brand small { margin-left: 8px; font-size: 12px; font-weight: 400; color: var(--bar-muted); }
+  .samples { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+  .samples button {
+    min-height: 36px; padding: 0 12px; border: 1px solid transparent; border-radius: 5px;
+    background: transparent; color: var(--bar-muted); cursor: pointer;
+  }
+  .samples button:hover { color: var(--bar-text); }
+  .samples button[aria-pressed="true"] { border-color: var(--bar-line); background: var(--bar-line); color: var(--bar-text); }
+
+  /* 2段目:主役は前後の切り替え */
+  .about { flex: 1 1 260px; min-width: 0; }
+  .about h1 { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 700; }
+  .about h1 span { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--bar-line); border-radius: 3px; font-size: 12px; font-weight: 400; color: var(--bar-muted); white-space: nowrap; }
+  .about p { margin: 0; font-size: 12px; color: var(--bar-muted); }
+
+  .switch { display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 8px; background: #000; border: 1px solid var(--bar-line); }
+  .switch button {
+    min-width: 112px; min-height: 44px; padding: 0 20px; border: 0; border-radius: 5px;
+    background: transparent; color: var(--bar-muted); font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .switch button:hover { color: var(--bar-text); }
+  .switch button[aria-pressed="true"], .switch button[aria-pressed="true"]:hover { background: var(--on); color: var(--on-text); }
+
+  .opts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
+  .seg { display: inline-flex; border: 1px solid var(--bar-line); border-radius: 5px; overflow: hidden; }
+  .seg button { min-height: 36px; padding: 0 12px; border: 0; background: transparent; color: var(--bar-muted); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--bar-line); }
+  .seg button:hover { color: var(--bar-text); }
+  .seg button[aria-pressed="true"] { background: var(--bar-line); color: var(--bar-text); }
+  .links { display: flex; flex-wrap: wrap; gap: 0 16px; }
+  .links a { display: inline-flex; align-items: center; min-height: 36px; color: var(--bar-muted); text-underline-offset: 3px; }
+  .links a:hover { color: var(--bar-text); }
+
+  /* 表示領域 */
+  .stage { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px 20px 20px; }
+  .pane { grid-row: 1; grid-column: 1; min-width: 0; min-height: 0; margin: 0; display: flex; flex-direction: column; align-items: center; }
+  .pane figcaption { display: none; margin-bottom: 8px; color: #4a4741; font-size: 12px; font-weight: 700; }
+  .pane iframe { flex: 1; width: 100%; min-height: 0; border: 1px solid var(--frame-line); border-radius: 4px; background: #fff; }
+  .stage[data-width="sp"] .pane iframe { width: 375px; max-width: 100%; }
+  .stage[data-layout="swap"][data-side="before"] .pane[data-pane="after"],
+  .stage[data-layout="swap"][data-side="after"] .pane[data-pane="before"] { visibility: hidden; }
+  .stage[data-layout="side"] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .stage[data-layout="side"] .pane[data-pane="after"] { grid-column: 2; }
+  .stage[data-layout="side"] .pane figcaption { display: block; }
+
+  .samples-select {
+    display: none; flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--bar-line); border-radius: 5px;
+    background: var(--bar); color: var(--bar-text); font-size: 16px;
+  }
+
+  @media (max-width: 899px) {
+    .only-wide { display: none; }
+    .row { padding: 8px 12px; gap: 8px 16px; }
+    .samples { display: none; }
+    .samples-select { display: block; }
+    .seg button, .links a { min-height: 44px; }
+    .switch { width: 100%; }
+    .about { flex-basis: 100%; }
+    .about p { display: none; }
+    .stage { padding: 12px; }
+  }
+  /* 画面そのものがスマホ幅のときは、表示幅の切り替えは要らない */
+  @media (max-width: 479px) {
+    .not-phone { display: none; }
+    .opts, .links { width: 100%; }
+    .links { justify-content: space-between; gap: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="row">
+    <p class="brand">design-polish<small>見本</small></p>
+    <nav class="samples" id="samples" aria-label="見本を選ぶ"></nav>
+    <select class="samples-select" id="samplesSelect" aria-label="見本を選ぶ"></select>
+  </div>
+
+  <div class="row">
+    <div class="about">
+      <h1 id="title"></h1>
+      <p id="note"></p>
+    </div>
+
+    <div class="switch" id="switch" role="group" aria-label="表示する版">
+      <button type="button" data-side="before" aria-pressed="true">修正前</button>
+      <button type="button" data-side="after" aria-pressed="false">修正後</button>
+    </div>
+
+    <div class="opts">
+      <div class="seg only-wide" id="layoutSeg" role="group" aria-label="並べ方">
+        <button type="button" data-layout="swap" aria-pressed="true">切り替え</button>
+        <button type="button" data-layout="side" aria-pressed="false">左右に並べる</button>
+      </div>
+      <div class="seg not-phone" role="group" aria-label="表示幅">
+        <button type="button" data-width="sp" aria-pressed="false">スマホ 375px</button>
+        <button type="button" data-width="pc" aria-pressed="true">PC</button>
+      </div>
+      <div class="links" id="links"></div>
+    </div>
+  </div>
+</header>
+
+<main class="stage" id="stage" data-layout="swap" data-width="pc" data-side="before">
+  <figure class="pane" data-pane="before">
+    <figcaption>修正前</figcaption>
+    <iframe id="frame-before" title="修正前の画面"></iframe>
+  </figure>
+  <figure class="pane" data-pane="after">
+    <figcaption>修正後</figcaption>
+    <iframe id="frame-after" title="修正後の画面"></iframe>
+  </figure>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // 見本の一覧。verdict は各見本の diagnosis.md に書かれた判定
+  var SAMPLES = [
+    { id: 'landing', name: '告知ページ', verdict: '改修', note: '在庫管理アプリの事前登録ページ。メニュー、よくある質問の開閉、登録フォームが動きます。' },
+    { id: 'dashboard', name: '管理画面', verdict: '改修', note: '宅配弁当の受注管理。状態タブ、検索、詳細モーダルが動きます。' },
+    { id: 'form', name: 'フォーム', verdict: '改修', note: '保育園の見学申し込み。入力の確認、「その他」の自由記入欄、送信後の表示が動きます。' },
+    { id: 'already-good', name: 'すでに良い画面', verdict: '調整', note: '珈琲豆の定期便の料金ページ。すでに決断が入っている画面で、小さな改善にとどまる例です。' },
+    { id: 'multipage', name: '複数ページ', verdict: '共通層=改修', live: true, note: '部品を共有する3ページ。画面内の右下のボタン(Alt + P)で共通層のCSSをオン・オフします。モーダルやタブを開いたまま比べられます。' }
+  ];
+
+  var stage = document.getElementById('stage');
+  var frames = { before: document.getElementById('frame-before'), after: document.getElementById('frame-after') };
+  var nav = document.getElementById('samples');
+  var select = document.getElementById('samplesSelect');
+  var links = document.getElementById('links');
+  var switchEl = document.getElementById('switch');
+  var layoutSeg = document.getElementById('layoutSeg');
+  var current = null;
+
+  function press(attr, value) {
+    Array.prototype.forEach.call(document.querySelectorAll('button[' + attr + ']'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute(attr) === value ? 'true' : 'false');
+    });
+    stage.setAttribute(attr, value);
+  }
+
+  function link(text, href) {
+    var a = document.createElement('a');
+    a.textContent = text; a.href = href; a.target = '_blank'; a.rel = 'noopener';
+    links.appendChild(a);
+  }
+
+  function show(id) {
+    var s = SAMPLES.filter(function (x) { return x.id === id; })[0] || SAMPLES[0];
+    if (current === s.id) return;
+    current = s.id;
+    var base = 'examples/' + s.id + '/';
+
+    Array.prototype.forEach.call(nav.children, function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-sample') === s.id ? 'true' : 'false');
+    });
+
+    select.value = s.id;
+
+    var title = document.getElementById('title');
+    title.textContent = s.name;
+    if (s.verdict) {
+      var tag = document.createElement('span');
+      tag.textContent = '判定:' + s.verdict;
+      title.appendChild(tag);
+    }
+    document.getElementById('note').textContent = s.note;
+
+    links.textContent = '';
+    if (s.live) {
+      // 複数ページの見本:画面内のボタンで切り替えるので、枠は1つだけ使う
+      switchEl.hidden = true;
+      layoutSeg.hidden = true;
+      press('data-layout', 'swap');
+      press('data-side', 'after');
+      frames.before.removeAttribute('src');
+      frames.after.src = base + 'index.html';
+      link('一覧を単体で開く', base + 'index.html');
+      link('詳細', base + 'detail.html');
+      link('設定', base + 'settings.html');
+      link('状態一覧', base + 'states.html');
+    } else {
+      switchEl.hidden = false;
+      layoutSeg.hidden = false;
+      press('data-side', 'before');
+      frames.before.src = base + 'before.html';
+      frames.after.src = base + 'after.html';
+      link('修正前を単体で開く', base + 'before.html');
+      link('修正後を単体で開く', base + 'after.html');
+    }
+    link('診断', base + 'diagnosis.md');
+    link('生成条件', base + 'generation.md');
+
+    if (location.hash.slice(1) !== s.id) {
+      try { history.replaceState(null, '', '#' + s.id); } catch (e) { location.hash = s.id; }
+    }
+  }
+
+  SAMPLES.forEach(function (s) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = s.name;
+    b.setAttribute('data-sample', s.id);
+    b.setAttribute('aria-pressed', 'false');
+    nav.appendChild(b);
+    var o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = s.name;
+    select.appendChild(o);
+  });
+  select.addEventListener('change', function () { show(select.value); });
+
+  var narrow = window.matchMedia('(max-width: 899px)');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-sample')) show(b.getAttribute('data-sample'));
+    if (b.hasAttribute('data-side')) press('data-side', b.getAttribute('data-side'));
+    if (b.hasAttribute('data-layout')) press('data-layout', narrow.matches ? 'swap' : b.getAttribute('data-layout'));
+    if (b.hasAttribute('data-width')) press('data-width', b.getAttribute('data-width'));
+  });
+  window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
+
+  // 狭い画面では左右並びをやめる
+  function fit() { if (narrow.matches) press('data-layout', 'swap'); }
+  if (narrow.addEventListener) narrow.addEventListener('change', fit); else narrow.addListener(fit);
+
+  // 前後でスクロール位置を揃える。ローカルのファイルとして開いた場合など、
+  // 枠の中に触れない環境では何もしない(切り替え自体は動く)
+  var lock = null;
+  function scroller(side) {
+    try { var d = frames[side].contentDocument; return d && (d.scrollingElement || d.documentElement); } catch (e) { return null; }
+  }
+  function follow(from, to) {
+    if (lock === from) { lock = null; return; }
+    var a = scroller(from), b = scroller(to);
+    if (!a || !b) return;
+    var max = a.scrollHeight - a.clientHeight;
+    lock = to;
+    b.scrollTop = (max > 0 ? a.scrollTop / max : 0) * (b.scrollHeight - b.clientHeight);
+    setTimeout(function () { if (lock === to) lock = null; }, 120);
+  }
+  function watch(side, other) {
+    frames[side].addEventListener('load', function () {
+      try {
+        frames[side].contentWindow.addEventListener('scroll', function () { follow(side, other); }, { passive: true });
+      } catch (e) { /* 揃えない */ }
+    });
+  }
+  watch('before', 'after');
+  watch('after', 'before');
+
+  show(location.hash.slice(1));
+  fit();
+})();
+</script>
+</body>
+</html>

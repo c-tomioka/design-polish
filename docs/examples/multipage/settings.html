@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>設定 | アンケン帳</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* このページだけの指定 */
+  .page { max-width: 760px; }
+  .page-title { font-size: 22px; text-align: center; }
+  .page-sub { text-align: center; }
+  .page-head { justify-content: center; }
+  .card { border-radius: 12px; padding: 26px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #eee; }
+  .section-title { font-size: 16px; color: #4f46e5; }
+  .btn-primary { background: #3b82f6; box-shadow: none; border-radius: 6px; padding: 8px 18px; }
+  .input, .select { border-width: 1px; border-radius: 6px; padding: 9px 12px; }
+  .row { display: flex; gap: 14px; }
+  .row .field { flex: 1; }
+  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; gap: 12px; }
+  .switch-row input { width: 20px; height: 20px; }
+  .save-row { text-align: right; margin-top: 14px; }
+  @media (max-width: 640px) { .row { flex-direction: column; gap: 0; } }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <a class="app-logo" href="index.html">📁 アンケン帳</a>
+  <nav class="app-nav" aria-label="メイン">
+    <a href="index.html">案件</a>
+    <a href="detail.html">案件の詳細</a>
+    <a href="settings.html" class="is-current" aria-current="page">設定</a>
+    <a href="states.html">状態一覧</a>
+  </nav>
+  <span class="app-user">👤 森デザイン室</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">⚙️ 設定をカスタマイズしよう!</h1>
+      <p class="page-sub">あなたにぴったりの環境をつくりましょう</p>
+    </div>
+  </div>
+
+  <form class="card" data-validate data-success="事業者情報を保存しました" novalidate>
+    <h2 class="section-title">🏢 事業者情報</h2>
+    <div class="field">
+      <label class="label" for="bizName">屋号・会社名</label>
+      <input class="input" id="bizName" name="bizName" type="text" value="森デザイン室" required>
+      <p class="error" id="bizNameError" hidden>入力してください</p>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label class="label" for="bizEmail">メールアドレス</label>
+        <input class="input" id="bizEmail" name="bizEmail" type="email" value="hello@mori-design.example" required>
+        <p class="error" id="bizEmailError" hidden>無効な入力です</p>
+      </div>
+      <div class="field">
+        <label class="label" for="bizTel">電話番号</label>
+        <input class="input" id="bizTel" name="bizTel" type="tel" value="03-0000-0000">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="bizNumber">インボイス登録番号</label>
+      <input class="input" id="bizNumber" name="bizNumber" type="text" placeholder="T1234567890123">
+      <p class="hint">請求書に印字されます</p>
+    </div>
+    <div class="save-row"><button type="submit" class="btn btn-primary">保存</button></div>
+  </form>
+
+  <form class="card" data-validate data-success="請求の設定を保存しました" novalidate>
+    <h2 class="section-title">💳 請求の設定</h2>
+    <div class="row">
+      <div class="field">
+        <label class="label" for="payTerm">支払い期限</label>
+        <select class="select" id="payTerm" name="payTerm">
+          <option value="30">請求日から30日</option>
+          <option value="eom">翌月末</option>
+          <option value="eonm">翌々月末</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="taxMode">消費税の表示</label>
+        <select class="select" id="taxMode" name="taxMode">
+          <option value="ex">税抜で表示</option>
+          <option value="in">税込で表示</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="bank">振込先</label>
+      <input class="input" id="bank" name="bank" type="text" value="みなと信用金庫 本店 普通 0000000" required>
+      <p class="error" id="bankError" hidden>入力してください</p>
+    </div>
+    <div class="save-row"><button type="submit" class="btn btn-primary">保存</button></div>
+  </form>
+
+  <form class="card" data-validate data-success="通知の設定を保存しました" novalidate>
+    <h2 class="section-title">🔔 通知</h2>
+    <label class="switch-row">納期の3日前にメールで知らせる <input type="checkbox" name="notifyDue" checked></label>
+    <label class="switch-row">確認待ちが5日続いたら知らせる <input type="checkbox" name="notifyReview" checked></label>
+    <label class="switch-row">毎週月曜に今週の予定をまとめて送る <input type="checkbox" name="notifyWeekly"></label>
+    <div class="save-row"><button type="submit" class="btn btn-primary">保存</button></div>
+  </form>
+
+  <div class="card">
+    <h2 class="section-title">🗂️ データ</h2>
+    <p class="page-sub" style="text-align:left;margin-bottom:14px">案件と請求の記録をCSVで書き出せます。退会するとすべてのデータが消えます。</p>
+    <button type="button" class="btn" disabled>CSVを書き出す(準備中)</button>
+    <button type="button" class="btn btn-danger" data-modal-open="leaveModal">退会する</button>
+  </div>
+</main>
+
+<div class="modal-backdrop" id="leaveModal">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="leaveTitle">
+    <h2 class="modal-title" id="leaveTitle">⚠️ 本当に退会しますか?</h2>
+    <p>この操作は取り消せません!</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" data-modal-close>キャンセル</button>
+      <button type="button" class="btn btn-danger" data-modal-close>OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<script src="app.js"></script>
+<script src="toggle-snippet.js" data-polish-href="polish.css"></script>
+</body>
+</html>

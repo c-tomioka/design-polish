@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>前後比較 | design-polish</title>
+<!--
+  design-polish 前後比較ページのひな形
+
+  修正前と修正後のHTMLをこの1ファイルに埋め込み、同じ位置で切り替えて見せる。
+  外部の読み込みがないので、会話内の表示でも、保存してローカルで開いても同じように動く。
+
+  使い方:
+    1. このファイルを複製する
+    2. 下の DP_META に、題名・判定・ひとことの説明を書く
+    3. ファイル末尾の <script type="text/plain" id="dp-before"> の中に修正前のHTML全体を、
+       id="dp-after" の中に修正後のHTML全体を貼る(今入っている仮の内容は消す)
+    4. 貼ったHTMLの中の  </script  を、すべて  <\/script  に書き換える。
+       同様に  <!--  は  <\!--  に書き換える。
+       (そのままだと埋め込みが途中で途切れる。表示するときに元へ戻される)
+
+  埋め込むHTMLは、CSSとスクリプトをインラインにした、単体で開ける形にする。
+-->
+<script>
+  window.DP_META = {
+    title: '画面の名前',
+    verdict: '改修',            // 調整 / 改修 / 再構成
+    note: 'ひとことの説明(何を主役にし、何を変えたか)'
+  };
+</script>
+<style>
+  :root {
+    --bar: #1d1c1a; --bar-line: #3a3833; --bar-text: #f3f1ec; --bar-muted: #b5b1a8;
+    --stage: #e4e1d9; --frame-line: #c2bdb1; --on: #f3f1ec; --on-text: #1d1c1a;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; display: grid; grid-template-rows: auto 1fr; height: 100vh; height: 100dvh;
+    background: var(--stage); color: var(--bar-text);
+    font: 14px/1.6 system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  }
+  button, a { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid #8fc7ab; outline-offset: 2px; }
+
+  /* ---- 操作バー ---- */
+  .bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
+    padding: 12px 20px; background: var(--bar);
+  }
+  .bar-title { flex: 1 1 240px; min-width: 0; }
+  .bar-title h1 { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 700; }
+  .bar-title h1 span { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--bar-line); border-radius: 3px; font-size: 12px; font-weight: 400; color: var(--bar-muted); white-space: nowrap; }
+  .bar-title p { margin: 0; font-size: 12px; color: var(--bar-muted); }
+
+  /* 主役:前後の切り替え */
+  .switch { display: inline-grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 8px; background: #000; border: 1px solid var(--bar-line); }
+  .switch button {
+    min-width: 112px; min-height: 44px; padding: 0 20px; border: 0; border-radius: 5px;
+    background: transparent; color: var(--bar-muted); font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .switch button[aria-pressed="true"] { background: var(--on); color: var(--on-text); }
+
+  /* 脇役:並べ方、幅、単体で開く */
+  .opts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
+  .seg { display: inline-flex; border: 1px solid var(--bar-line); border-radius: 5px; overflow: hidden; }
+  .seg button { min-height: 36px; padding: 0 12px; border: 0; background: transparent; color: var(--bar-muted); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--bar-line); }
+  .seg button[aria-pressed="true"] { background: var(--bar-line); color: var(--bar-text); }
+  .links { display: inline-flex; gap: 16px; }
+  .links a { display: inline-flex; align-items: center; min-height: 36px; color: var(--bar-muted); text-underline-offset: 3px; }
+  .links a:hover, .seg button:hover, .switch button:hover { color: var(--bar-text); }
+  .switch button[aria-pressed="true"]:hover { color: var(--on-text); }
+
+  /* ---- 表示領域 ---- */
+  .stage { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px 20px 20px; }
+  .pane { grid-row: 1; grid-column: 1; min-width: 0; min-height: 0; margin: 0; display: flex; flex-direction: column; align-items: center; }
+  .pane figcaption { display: none; margin-bottom: 8px; color: #4a4741; font-size: 12px; font-weight: 700; }
+  .pane iframe { flex: 1; width: 100%; min-height: 0; border: 1px solid var(--frame-line); border-radius: 4px; background: #fff; }
+  .stage[data-width="sp"] .pane iframe { width: 375px; max-width: 100%; }
+
+  /* 切り替え表示:同じ位置に重ね、片方だけ見せる(両方とも読み込んだままにする) */
+  .stage[data-layout="swap"][data-side="before"] .pane[data-pane="after"],
+  .stage[data-layout="swap"][data-side="after"] .pane[data-pane="before"] { visibility: hidden; }
+
+  /* 左右並び:広い画面だけ */
+  .stage[data-layout="side"] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .stage[data-layout="side"] .pane[data-pane="after"] { grid-column: 2; }
+  .stage[data-layout="side"] .pane figcaption { display: block; }
+
+  @media (max-width: 899px) {
+    .only-wide { display: none; }
+    .bar { padding: 12px 16px; }
+    .switch { width: 100%; }
+    .seg button, .links a { min-height: 44px; }
+    .stage { padding: 12px; }
+    .bar-title { flex-basis: 100%; }
+    .bar-title p { display: none; }
+  }
+  /* 画面そのものがスマホ幅のときは、表示幅の切り替えは要らない */
+  @media (max-width: 479px) {
+    .not-phone { display: none; }
+    .opts, .links { width: 100%; }
+    .links { justify-content: space-between; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-title">
+    <h1 id="dp-title"></h1>
+    <p id="dp-note"></p>
+  </div>
+
+  <div class="switch" role="group" aria-label="表示する版">
+    <button type="button" data-side="before" aria-pressed="true">修正前</button>
+    <button type="button" data-side="after" aria-pressed="false">修正後</button>
+  </div>
+
+  <div class="opts">
+    <div class="seg only-wide" role="group" aria-label="並べ方">
+      <button type="button" data-layout="swap" aria-pressed="true">切り替え</button>
+      <button type="button" data-layout="side" aria-pressed="false">左右に並べる</button>
+    </div>
+    <div class="seg not-phone" role="group" aria-label="表示幅">
+      <button type="button" data-width="sp" aria-pressed="false">スマホ 375px</button>
+      <button type="button" data-width="pc" aria-pressed="true">PC</button>
+    </div>
+    <div class="links">
+      <a id="dp-open-before" href="#" target="_blank" rel="noopener">修正前を単体で開く</a>
+      <a id="dp-open-after" href="#" target="_blank" rel="noopener">修正後を単体で開く</a>
+    </div>
+  </div>
+</header>
+
+<main class="stage" id="dp-stage" data-layout="swap" data-width="pc" data-side="before">
+  <figure class="pane" data-pane="before">
+    <figcaption>修正前</figcaption>
+    <iframe id="dp-frame-before" title="修正前の画面"></iframe>
+  </figure>
+  <figure class="pane" data-pane="after">
+    <figcaption>修正後</figcaption>
+    <iframe id="dp-frame-after" title="修正後の画面"></iframe>
+  </figure>
+</main>
+
+<!-- ▼ 修正前のHTML全体をここに貼る( </script は <\/script に、 <!-- は <\!-- に書き換える) -->
+<script type="text/plain" id="dp-before">
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>修正前</title></head>
+<body style="font-family:sans-serif;padding:32px"><h1>修正前</h1><p>ここに修正前のHTMLを埋め込みます。</p></body></html>
+</script>
+
+<!-- ▼ 修正後のHTML全体をここに貼る(同じ書き換えをする) -->
+<script type="text/plain" id="dp-after">
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>修正後</title></head>
+<body style="font-family:sans-serif;padding:32px"><h1>修正後</h1><p>ここに修正後のHTMLを埋め込みます。</p></body></html>
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var meta = window.DP_META || {};
+  var stage = document.getElementById('dp-stage');
+  var frames = {
+    before: document.getElementById('dp-frame-before'),
+    after: document.getElementById('dp-frame-after')
+  };
+
+  // 題名
+  var title = document.getElementById('dp-title');
+  title.textContent = meta.title || '前後比較';
+  if (meta.verdict) {
+    var tag = document.createElement('span');
+    tag.textContent = '判定:' + meta.verdict;
+    title.appendChild(tag);
+  }
+  document.getElementById('dp-note').textContent = meta.note || '';
+  if (meta.title) document.title = meta.title + ' 前後比較 | design-polish';
+
+  // 埋め込まれたHTMLを取り出し、書き換えた箇所を元に戻す
+  function embedded(id) {
+    return document.getElementById(id).textContent
+      .replace(/^\s+/, '')
+      .replace(/<\\\/script/gi, '</script')
+      .replace(/<\\!--/g, '<!--');
+  }
+  ['before', 'after'].forEach(function (side) {
+    var html = embedded('dp-' + side);
+    frames[side].srcdoc = html;
+    // 単体で開くリンク
+    try {
+      var url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+      document.getElementById('dp-open-' + side).href = url;
+    } catch (e) {
+      document.getElementById('dp-open-' + side).hidden = true;
+    }
+  });
+
+  // 操作
+  function press(group, attr, value) {
+    Array.prototype.forEach.call(document.querySelectorAll('[' + attr + ']'), function (b) {
+      if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', b.getAttribute(attr) === value ? 'true' : 'false');
+    });
+    stage.setAttribute(attr, value);
+  }
+  var narrow = window.matchMedia('(max-width: 899px)');
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    if (b.hasAttribute('data-side')) press('side', 'data-side', b.getAttribute('data-side'));
+    if (b.hasAttribute('data-layout')) press('layout', 'data-layout', narrow.matches ? 'swap' : b.getAttribute('data-layout'));
+    if (b.hasAttribute('data-width')) press('width', 'data-width', b.getAttribute('data-width'));
+  });
+
+  // 狭い画面では左右並びをやめる
+  function fit() { if (narrow.matches) press('layout', 'data-layout', 'swap'); }
+  if (narrow.addEventListener) narrow.addEventListener('change', fit); else narrow.addListener(fit);
+  fit();
+
+  // 前後でスクロール位置を揃える(同じ位置で見比べるため)
+  var lock = null;
+  function scroller(side) {
+    try { var d = frames[side].contentDocument; return d.scrollingElement || d.documentElement; } catch (e) { return null; }
+  }
+  function follow(from, to) {
+    if (lock === from) { lock = null; return; }
+    var a = scroller(from), b = scroller(to);
+    if (!a || !b) return;
+    var max = a.scrollHeight - a.clientHeight;
+    var ratio = max > 0 ? a.scrollTop / max : 0;
+    lock = to;
+    b.scrollTop = ratio * (b.scrollHeight - b.clientHeight);
+    setTimeout(function () { if (lock === to) lock = null; }, 120);
+  }
+  function watch(side, other) {
+    frames[side].addEventListener('load', function () {
+      try {
+        frames[side].contentWindow.addEventListener('scroll', function () { follow(side, other); }, { passive: true });
+      } catch (e) { /* 取得できない環境では揃えない */ }
+    });
+  }
+  watch('before', 'after');
+  watch('after', 'before');
+})();
+</script>
+</body>
+</html>

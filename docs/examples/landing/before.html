@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タナログ - 次世代の在庫管理アプリ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #000; background: #fff; line-height: 1.5; }
+  a { text-decoration: none; }
+
+  .nav { position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 14px 37px; background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
+  .logo { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { color: #555; font-weight: 600; font-size: 15px; }
+  .nav-cta { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff !important; padding: 9px 22px; border-radius: 999px; box-shadow: 0 4px 15px rgba(118,75,162,0.4); }
+  .menu-btn { display: none; background: none; border: none; font-size: 26px; cursor: pointer; }
+
+  .hero { text-align: center; padding: 110px 20px 90px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; width: 500px; height: 500px; background: rgba(255,255,255,0.15); filter: blur(100px); border-radius: 50%; top: -150px; left: -100px; }
+  .hero::after { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(236,72,153,0.4); filter: blur(120px); border-radius: 50%; bottom: -150px; right: -50px; }
+  .hero > * { position: relative; z-index: 1; }
+  .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); padding: 7px 18px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-bottom: 22px; }
+  .hero h1 { font-size: 54px; font-weight: 900; line-height: 1.2; margin-bottom: 18px; }
+  .hero h1 span { background: linear-gradient(90deg, #fbc2eb, #a6c1ee); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 19px; opacity: 0.9; max-width: 900px; margin: 0 auto 34px; }
+  .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 15px 34px; border-radius: 999px; font-weight: 700; font-size: 17px; cursor: pointer; border: none; transition: all 0.3s ease; }
+  .btn:hover { transform: translateY(-3px) scale(1.05); }
+  .btn-white { background: #fff; color: #764ba2; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .btn-pink { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; box-shadow: 0 10px 30px rgba(245,87,108,0.5); }
+  .btn-glass { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(10px); }
+
+  .stats { display: flex; justify-content: center; gap: 70px; padding: 45px 20px; background: #f8f9ff; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 38px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .stat-label { color: #999; font-size: 14px; font-weight: 600; }
+
+  .section { padding: 85px 20px; text-align: center; }
+  .section-label { color: #764ba2; font-size: 13px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+  .section h2 { font-size: 38px; font-weight: 900; margin-bottom: 13px; }
+  .section-sub { color: #999; font-size: 17px; margin-bottom: 50px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1150px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 24px; padding: 38px 28px; box-shadow: 0 10px 40px rgba(102,126,234,0.15); transition: all 0.3s ease; border: 1px solid rgba(102,126,234,0.1); }
+  .card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(102,126,234,0.3); }
+  .card-icon { width: 70px; height: 70px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 8px 20px rgba(118,75,162,0.4); }
+  .card h3 { font-size: 21px; font-weight: 800; margin-bottom: 11px; }
+  .card p { color: #888; font-size: 15px; }
+
+  .voices { background: linear-gradient(180deg, #f8f9ff 0%, #fff 100%); }
+  .voice { text-align: left; }
+  .voice-stars { color: #fbbf24; font-size: 19px; margin-bottom: 12px; }
+  .voice-name { margin-top: 17px; font-weight: 800; font-size: 15px; }
+  .voice-role { color: #aaa; font-size: 13px; }
+
+  .faq { max-width: 760px; margin: 0 auto; text-align: left; }
+  .faq-item { background: #fff; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow: hidden; }
+  .faq-q { width: 100%; text-align: left; padding: 19px 23px; font-size: 17px; font-weight: 700; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; font-family: inherit; }
+  .faq-a { padding: 0 23px; max-height: 0; overflow: hidden; color: #888; transition: all 0.4s ease; }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 23px 19px; }
+  .faq-item.open .faq-q span { transform: rotate(45deg); }
+  .faq-q span { transition: all 0.3s; color: #764ba2; font-size: 22px; }
+
+  .signup { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 32px; max-width: 1000px; margin: 0 auto 80px; padding: 65px 25px; text-align: center; box-shadow: 0 30px 80px rgba(118,75,162,0.5); }
+  .signup h2 { font-size: 36px; font-weight: 900; margin-bottom: 12px; }
+  .signup p { opacity: 0.9; margin-bottom: 28px; }
+  .signup form { display: flex; gap: 11px; justify-content: center; flex-wrap: wrap; }
+  .signup input { padding: 15px 22px; border-radius: 999px; border: none; width: 320px; max-width: 100%; font-size: 16px; outline: none; }
+  .signup-msg { margin-top: 15px; font-weight: 700; min-height: 24px; }
+
+  .footer { background: #1a1a2e; color: #888; text-align: center; padding: 38px 20px; font-size: 14px; }
+  .footer a { color: #a78bfa; margin: 0 9px; }
+
+  @media (max-width: 768px) {
+    .nav { padding: 14px 18px; }
+    .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; flex-direction: column; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .nav-links.open { display: flex; }
+    .menu-btn { display: block; }
+    .hero h1 { font-size: 34px; }
+    .cards { grid-template-columns: 1fr; }
+    .stats { gap: 30px; }
+    .section h2 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">✨ タナログ</div>
+  <button class="menu-btn" id="menuBtn" aria-label="メニュー" aria-expanded="false">☰</button>
+  <div class="nav-links" id="navLinks">
+    <a href="#features">機能</a>
+    <a href="#voices">お客様の声</a>
+    <a href="#faq">よくある質問</a>
+    <a href="#signup" class="nav-cta">今すぐ始める</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="badge">🚀 NEW ・ 2027年2月リリース予定</div>
+  <h1>在庫管理を、<br><span>再定義する。</span></h1>
+  <p>タナログは、AIの力であなたのお店の在庫管理をシームレスに革新する次世代のオールインワン・プラットフォームです。スマホでバーコードを読むだけで棚卸しが完了!もう閉店後に紙とペンで数える必要はありません!</p>
+  <div class="hero-btns">
+    <a href="#signup" class="btn btn-white">🎉 無料で事前登録</a>
+    <a href="#features" class="btn btn-pink">✨ 詳しく見る</a>
+    <a href="#faq" class="btn btn-glass">💬 よくある質問</a>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">10,000+</div><div class="stat-label">導入店舗</div></div>
+  <div class="stat"><div class="stat-num">99.9%</div><div class="stat-label">満足度</div></div>
+  <div class="stat"><div class="stat-num">5倍</div><div class="stat-label">作業スピード</div></div>
+  <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">サポート</div></div>
+</div>
+
+<section class="section" id="features">
+  <div class="section-label">Features</div>
+  <h2>パワフルな機能 💪</h2>
+  <p class="section-sub">あなたのビジネスを加速させる、革新的な機能の数々</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <h3>かんたんスキャン</h3>
+      <p>スマホのカメラでバーコードを読み取るだけ。専用の機械は不要です。1品あたり約2秒で数量を記録できます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>発注点アラート</h3>
+      <p>商品ごとに決めた数量を下回ると、スマホに通知します。売れ筋の欠品を防ぎます。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>CSVエクスポート</h3>
+      <p>棚卸しの結果をCSVで書き出せます。会計ソフトや表計算ソフトにそのまま取り込めます。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section voices" id="voices">
+  <div class="section-label">Testimonials</div>
+  <h2>お客様の声 💖</h2>
+  <p class="section-sub">多くのお客様から喜びの声をいただいています</p>
+  <div class="cards">
+    <div class="card voice">
+      <div class="voice-stars">★★★★★</div>
+      <p>「棚卸しの時間が劇的に短縮されました!もうタナログなしでは考えられません!」</p>
+      <div class="voice-name">田中 太郎 様</div>
+      <div class="voice-role">雑貨店オーナー</div>
+    </div>
+    <div class="card voice">
+      <div class="voice-stars">★★★★★</div>
+      <p>「直感的で使いやすい!スタッフ全員がすぐに使いこなせました!最高です!」</p>
+      <div class="voice-name">鈴木 花子 様</div>
+      <div class="voice-role">カフェ経営</div>
+    </div>
+    <div class="card voice">
+      <div class="voice-stars">★★★★★</div>
+      <p>「まさにゲームチェンジャー!在庫管理の概念が変わりました!」</p>
+      <div class="voice-name">佐藤 健 様</div>
+      <div class="voice-role">書店店長</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="section-label">FAQ</div>
+  <h2>よくある質問 🤔</h2>
+  <p class="section-sub">気になる疑問にお答えします</p>
+  <div class="faq">
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">料金はいくらですか? <span>+</span></button>
+      <div class="faq-a">商品500点までは無料です。それ以上は1店舗あたり月額1,480円(税込)で、商品数の上限はありません。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">対応している端末は? <span>+</span></button>
+      <div class="faq-a">iOS 17以降のiPhoneと、Android 13以降のスマートフォンに対応します。タブレットにはリリース後に対応する予定です。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">バーコードのない商品は登録できますか? <span>+</span></button>
+      <div class="faq-a">できます。商品名と写真で登録し、一覧から選んで数量を入力します。</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" aria-expanded="false">事前登録すると何がありますか? <span>+</span></button>
+      <div class="faq-a">リリース日にメールでお知らせします。事前登録された方は、有料プランを最初の3か月間無料でお使いいただけます。</div>
+    </div>
+  </div>
+</section>
+
+<section class="signup" id="signup">
+  <h2>🚀 今すぐ始めよう!</h2>
+  <p>事前登録で有料プランが3か月無料!このチャンスをお見逃しなく!</p>
+  <form id="signupForm" novalidate>
+    <input type="email" id="email" name="email" placeholder="メールアドレスを入力" autocomplete="email">
+    <button type="submit" class="btn btn-pink">始める ✨</button>
+  </form>
+  <div class="signup-msg" id="signupMsg" role="status"></div>
+</section>
+
+<footer class="footer">
+  <p>© 2026 タナログ All rights reserved.</p>
+  <p style="margin-top:10px"><a href="#features">機能</a><a href="#faq">よくある質問</a><a href="#signup">事前登録</a></p>
+</footer>
+
+<script>
+  // モバイルメニュー
+  var menuBtn = document.getElementById('menuBtn');
+  var navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', function () {
+    var open = navLinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // FAQの開閉
+  document.querySelectorAll('.faq-q').forEach(function (q) {
+    q.addEventListener('click', function () {
+      var item = q.parentElement;
+      var open = item.classList.toggle('open');
+      q.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  // 事前登録フォーム(送信はせず、画面内に結果を出す)
+  var form = document.getElementById('signupForm');
+  var msg = document.getElementById('signupMsg');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = document.getElementById('email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      msg.textContent = '⚠️ エラーが発生しました';
+      return;
+    }
+    msg.textContent = '🎉 登録完了!ありがとうございます!';
+    form.reset();
+  });
+</script>
+</body>
+</html>

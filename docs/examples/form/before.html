@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>見学のお申し込み | ひだまり保育園</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 50%, #8ec5fc 100%); display: flex; align-items: center; justify-content: center; padding: 35px 15px; position: relative; overflow-x: hidden; }
+  .blob { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.6; z-index: 0; animation: float 8s ease-in-out infinite; }
+  .blob-1 { width: 380px; height: 380px; background: #ff9a9e; top: -100px; left: -80px; }
+  .blob-2 { width: 320px; height: 320px; background: #a1c4fd; bottom: -80px; right: -60px; animation-delay: 2s; }
+  @keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.1); } }
+
+  .card { position: relative; z-index: 1; width: 100%; max-width: 560px; background: rgba(255,255,255,0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.4); border-radius: 30px; padding: 43px 37px; box-shadow: 0 25px 60px rgba(31,38,135,0.25); animation: fadeUp 0.8s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+  .emoji-top { font-size: 52px; text-align: center; margin-bottom: 9px; }
+  h1 { text-align: center; font-size: 29px; font-weight: 800; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.15); margin-bottom: 7px; }
+  .sub { text-align: center; color: rgba(255,255,255,0.85); font-size: 14px; margin-bottom: 29px; }
+
+  .steps { display: flex; justify-content: center; gap: 9px; margin-bottom: 27px; }
+  .step { background: rgba(255,255,255,0.3); color: #fff; font-size: 11px; font-weight: 700; padding: 5px 13px; border-radius: 999px; letter-spacing: 1px; text-transform: uppercase; }
+  .step.on { background: #fff; color: #a18cd1; box-shadow: 0 4px 15px rgba(255,255,255,0.5); }
+
+  .field { margin-bottom: 17px; }
+  .row { display: flex; gap: 13px; }
+  .row .field { flex: 1; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, textarea { width: 100%; padding: 15px 19px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.3); color: #fff; font-size: 15px; font-family: inherit; outline: none; transition: all 0.3s; }
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.75); }
+  select { color: rgba(255,255,255,0.9); appearance: none; }
+  select option { color: #333; }
+  input:focus, select:focus, textarea:focus { background: rgba(255,255,255,0.45); box-shadow: 0 0 25px rgba(255,255,255,0.5); transform: scale(1.02); }
+  textarea { resize: vertical; min-height: 96px; }
+  .counter { text-align: right; font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+  .group-label { color: #fff; font-weight: 700; font-size: 14px; margin-bottom: 9px; }
+  .checks { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 17px; }
+  .check { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 8px 15px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .check input { accent-color: #a18cd1; }
+  .hidden { display: none; }
+  .err { color: #ff4d6d; font-size: 12px; font-weight: 700; margin-top: 5px; min-height: 0; text-shadow: 0 1px 2px rgba(255,255,255,0.4); }
+  .invalid { border-color: #ff4d6d !important; box-shadow: 0 0 20px rgba(255,77,109,0.5) !important; }
+
+  .agree { display: flex; gap: 9px; align-items: flex-start; color: rgba(255,255,255,0.9); font-size: 12px; margin: 21px 0 5px; }
+  .agree a { color: #fff; font-weight: 700; }
+  .btns { display: flex; gap: 11px; margin-top: 23px; }
+  .btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; font-family: inherit; transition: all 0.3s; }
+  .btn:hover { transform: translateY(-3px); }
+  .btn-main { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; box-shadow: 0 10px 30px rgba(245,87,108,0.5); }
+  .btn-sub { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; box-shadow: 0 10px 30px rgba(79,172,254,0.5); }
+  .secure { text-align: center; color: rgba(255,255,255,0.8); font-size: 11px; margin-top: 17px; }
+
+  .done { text-align: center; color: #fff; }
+  .done .emoji-top { font-size: 68px; }
+  .done p { margin-top: 11px; font-size: 15px; opacity: 0.9; }
+
+  @media (max-width: 520px) {
+    .card { padding: 31px 21px; }
+    .row { flex-direction: column; gap: 0; }
+    h1 { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="card">
+  <form id="visitForm" novalidate>
+    <div class="emoji-top">🌻</div>
+    <h1>見学のお申し込み ✨</h1>
+    <p class="sub">ひだまり保育園へようこそ!素敵な出会いを楽しみにしています 💕</p>
+
+    <div class="steps">
+      <span class="step on">Step 1</span>
+      <span class="step">Step 2</span>
+      <span class="step">Step 3</span>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <input type="text" id="parentName" name="parentName" placeholder="👤 保護者のお名前" autocomplete="name">
+        <div class="err" id="parentNameErr"></div>
+      </div>
+      <div class="field">
+        <input type="text" id="childName" name="childName" placeholder="👶 お子さまのお名前">
+        <div class="err" id="childNameErr"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <select id="childAge" name="childAge" aria-label="お子さまの年齢">
+          <option value="">🎂 お子さまの年齢</option>
+          <option value="0">0歳</option>
+          <option value="1">1歳</option>
+          <option value="2">2歳</option>
+          <option value="3">3歳</option>
+          <option value="4">4歳</option>
+          <option value="5">5歳</option>
+        </select>
+        <div class="err" id="childAgeErr"></div>
+      </div>
+      <div class="field">
+        <input type="date" id="visitDate" name="visitDate" aria-label="見学希望日">
+        <div class="err" id="visitDateErr"></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <select id="visitTime" name="visitTime" aria-label="希望の時間帯">
+        <option value="">⏰ 希望の時間帯</option>
+        <option value="am">午前(10:00〜11:00)</option>
+        <option value="pm">午後(15:30〜16:30)</option>
+      </select>
+      <div class="err" id="visitTimeErr"></div>
+    </div>
+
+    <div class="field">
+      <input type="email" id="email" name="email" placeholder="📧 メールアドレス" autocomplete="email">
+      <div class="err" id="emailErr"></div>
+    </div>
+    <div class="field">
+      <input type="tel" id="tel" name="tel" placeholder="📱 電話番号(任意)" autocomplete="tel">
+      <div class="err" id="telErr"></div>
+    </div>
+
+    <div class="group-label">💭 当日聞きたいこと(複数選択OK)</div>
+    <div class="checks">
+      <label class="check"><input type="checkbox" name="topics" value="day"> 1日の流れ</label>
+      <label class="check"><input type="checkbox" name="topics" value="lunch"> 給食・アレルギー</label>
+      <label class="check"><input type="checkbox" name="topics" value="fee"> 保育料</label>
+      <label class="check"><input type="checkbox" name="topics" value="extended"> 延長保育</label>
+      <label class="check"><input type="checkbox" name="topics" value="other" id="topicOther"> その他</label>
+    </div>
+
+    <div class="field hidden" id="otherWrap">
+      <textarea id="otherText" name="otherText" maxlength="200" placeholder="✏️ ご自由にお書きください"></textarea>
+      <div class="counter"><span id="otherCount">0</span> / 200</div>
+    </div>
+
+    <label class="agree">
+      <input type="checkbox" id="agree" name="agree">
+      <span><a href="#privacy">プライバシーポリシー</a>に同意します</span>
+    </label>
+    <div class="err" id="agreeErr"></div>
+
+    <div class="btns">
+      <button type="reset" class="btn btn-sub" id="resetBtn">🔄 リセット</button>
+      <button type="submit" class="btn btn-main" id="submitBtn">送信する 🚀</button>
+    </div>
+    <p class="secure">🔒 あなたの情報は安全に保護されています</p>
+  </form>
+
+  <div class="done hidden" id="done" role="status">
+    <div class="emoji-top">🎉</div>
+    <h1>送信完了!</h1>
+    <p>ありがとうございます!担当者より折り返しご連絡いたします ✨</p>
+  </div>
+</div>
+
+<script>
+  var form = document.getElementById('visitForm');
+  var done = document.getElementById('done');
+  var topicOther = document.getElementById('topicOther');
+  var otherWrap = document.getElementById('otherWrap');
+  var otherText = document.getElementById('otherText');
+  var otherCount = document.getElementById('otherCount');
+
+  // 見学希望日は明日以降
+  var tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('visitDate').min = tomorrow.toISOString().slice(0, 10);
+
+  // 「その他」を選ぶと自由記入欄が出る
+  topicOther.addEventListener('change', function () {
+    otherWrap.classList.toggle('hidden', !topicOther.checked);
+  });
+  otherText.addEventListener('input', function () {
+    otherCount.textContent = otherText.value.length;
+  });
+
+  function setErr(id, text) {
+    var el = document.getElementById(id);
+    var errEl = document.getElementById(id + 'Err');
+    errEl.textContent = text;
+    if (el.type !== 'checkbox') el.classList.toggle('invalid', !!text);
+    el.setAttribute('aria-invalid', text ? 'true' : 'false');
+    return !text;
+  }
+
+  function validate() {
+    var ok = true;
+    var v = function (id) { return document.getElementById(id).value.trim(); };
+    ok = setErr('parentName', v('parentName') ? '' : '❌ 入力してください') && ok;
+    ok = setErr('childName', v('childName') ? '' : '❌ 入力してください') && ok;
+    ok = setErr('childAge', v('childAge') !== '' ? '' : '❌ 選択してください') && ok;
+    ok = setErr('visitDate', v('visitDate') ? '' : '❌ 入力してください') && ok;
+    ok = setErr('visitTime', v('visitTime') ? '' : '❌ 選択してください') && ok;
+    ok = setErr('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email')) ? '' : '❌ 無効な入力です') && ok;
+    ok = setErr('tel', !v('tel') || /^[0-9\-+() ]{10,}$/.test(v('tel')) ? '' : '❌ 無効な入力です') && ok;
+    ok = setErr('agree', document.getElementById('agree').checked ? '' : '❌ 同意が必要です') && ok;
+    return ok;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validate()) {
+      var first = form.querySelector('[aria-invalid="true"]');
+      if (first) first.focus();
+      return;
+    }
+    form.classList.add('hidden');
+    done.classList.remove('hidden');
+  });
+
+  form.addEventListener('reset', function () {
+    setTimeout(function () {
+      form.querySelectorAll('.err').forEach(function (el) { el.textContent = ''; });
+      form.querySelectorAll('.invalid').forEach(function (el) { el.classList.remove('invalid'); });
+      form.querySelectorAll('[aria-invalid]').forEach(function (el) { el.removeAttribute('aria-invalid'); });
+      otherWrap.classList.add('hidden');
+      otherCount.textContent = '0';
+    }, 0);
+  });
+</script>
+</body>
+</html>

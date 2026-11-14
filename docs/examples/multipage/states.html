@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>状態一覧 | アンケン帳</title>
+<!-- skills/design-polish/assets/state-gallery-template.html をもとに、アンケン帳の部品を実際のマークアップのまま並べたもの -->
+<link rel="stylesheet" href="base.css">
+<style>
+  /* ---- 状態一覧ページ自身の枠組み ---- */
+  .dpg-page { margin: 0; background: #f4f2ed; }
+  .dpg-wrap { max-width: 1120px; margin: 0 auto; padding: 32px 20px 96px; font: 14px/1.7 system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", sans-serif; color: #1d1c1a; }
+  .dpg-title { font-size: 22px; line-height: 1.4; font-weight: 700; margin: 0 0 4px; color: #1d1c1a; }
+  .dpg-lead { margin: 0 0 32px; color: #5c5952; }
+  .dpg-part { margin: 0 0 40px; }
+  .dpg-part-name { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid #d6d2c8; font-size: 16px; font-weight: 700; color: #1d1c1a; }
+  .dpg-part-name small { font-size: 12px; font-weight: 400; color: #5c5952; }
+  .dpg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .dpg-cell { position: relative; min-height: 112px; padding: 36px 16px 16px; border: 1px solid #d6d2c8; border-radius: 4px; background: #ffffff; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; }
+  .dpg-cell::before { content: attr(data-state); position: absolute; top: 8px; left: 12px; font: 600 11px/1.4 system-ui, sans-serif; color: #5c5952; }
+  .dpg-wide { grid-column: 1 / -1; align-items: stretch; }
+  .dpg-stage { transform: translateZ(0); min-height: 360px; overflow: hidden; grid-column: 1 / -1; align-items: stretch; }
+  .dpg-stage .modal-backdrop { position: absolute; }
+  .dpg-missing { border-style: dashed; background: transparent; }
+  .dpg-missing::after { content: "未実装"; color: #8a3b12; font: 600 12px/1.4 system-ui, sans-serif; }
+  .dpg-cell .field { width: 100%; margin-bottom: 0; }
+  .dpg-cell .toast { position: static; transform: none; }
+</style>
+</head>
+<body class="dpg-page">
+<header class="app-header">
+  <a class="app-logo" href="index.html">📁 アンケン帳</a>
+  <nav class="app-nav" aria-label="メイン">
+    <a href="index.html">案件</a>
+    <a href="detail.html">案件の詳細</a>
+    <a href="settings.html">設定</a>
+    <a href="states.html" class="is-current" aria-current="page">状態一覧</a>
+  </nav>
+  <span class="app-user">👤 森デザイン室</span>
+</header>
+
+<div class="dpg-wrap">
+  <h1 class="dpg-title">状態一覧</h1>
+  <p class="dpg-lead">アンケン帳の3ページに共通する部品を、全状態で並べたページ。右下のボタン(または Alt + P)で共通層のCSSをオン・オフできる。</p>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">主ボタン <small>.btn.btn-primary / 一覧・詳細・設定</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell" data-state="通常"><button type="button" class="btn btn-primary">保存</button></div>
+      <div class="dpg-cell" data-state="ホバー"><button type="button" class="btn btn-primary is-hover">保存</button></div>
+      <div class="dpg-cell" data-state="フォーカス"><button type="button" class="btn btn-primary is-focus">保存</button></div>
+      <div class="dpg-cell" data-state="無効"><button type="button" class="btn btn-primary" disabled>保存</button></div>
+      <div class="dpg-cell dpg-missing" data-state="読み込み中"></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">副ボタン・危険な操作 <small>.btn / .btn-ghost / .btn-danger</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell" data-state="副・通常"><button type="button" class="btn">キャンセル</button></div>
+      <div class="dpg-cell" data-state="副・ホバー"><button type="button" class="btn is-hover">キャンセル</button></div>
+      <div class="dpg-cell" data-state="副・フォーカス"><button type="button" class="btn is-focus">キャンセル</button></div>
+      <div class="dpg-cell" data-state="副・無効"><button type="button" class="btn" disabled>CSVを書き出す(準備中)</button></div>
+      <div class="dpg-cell" data-state="文字だけ"><button type="button" class="btn btn-ghost">詳細を見る</button></div>
+      <div class="dpg-cell" data-state="危険・通常"><button type="button" class="btn btn-danger">退会する</button></div>
+      <div class="dpg-cell" data-state="危険・ホバー"><button type="button" class="btn btn-danger is-hover">退会する</button></div>
+      <div class="dpg-cell" data-state="危険・フォーカス"><button type="button" class="btn btn-danger is-focus">退会する</button></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">入力欄 <small>.input / .select / .textarea</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell" data-state="通常(空)"><div class="field"><label class="label" for="s1">インボイス登録番号</label><input class="input" id="s1" type="text" placeholder="T1234567890123"><p class="hint">請求書に印字されます</p></div></div>
+      <div class="dpg-cell" data-state="入力済み"><div class="field"><label class="label" for="s2">屋号・会社名</label><input class="input" id="s2" type="text" value="森デザイン室"></div></div>
+      <div class="dpg-cell" data-state="フォーカス"><div class="field"><label class="label" for="s3">屋号・会社名</label><input class="input is-focus" id="s3" type="text" value="森デザイン室"></div></div>
+      <div class="dpg-cell" data-state="無効"><div class="field"><label class="label" for="s4">屋号・会社名</label><input class="input" id="s4" type="text" value="森デザイン室" disabled></div></div>
+      <div class="dpg-cell" data-state="エラー"><div class="field"><label class="label" for="s5">送付先メールアドレス</label><input class="input is-invalid" id="s5" type="email" value="kamome@" aria-invalid="true" aria-describedby="s5Error"><p class="error" id="s5Error">無効な入力です</p></div></div>
+      <div class="dpg-cell" data-state="選択"><div class="field"><label class="label" for="s6">支払い期限</label><select class="select" id="s6"><option>請求日から30日</option><option>翌月末</option></select></div></div>
+      <div class="dpg-cell" data-state="複数行"><div class="field"><label class="label" for="s7">内容</label><textarea class="textarea" id="s7" rows="3">写真は12月第1週に届く予定。</textarea></div></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">バッジ <small>.badge / 一覧・詳細</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell" data-state="進行中"><span class="badge badge-progress">進行中</span></div>
+      <div class="dpg-cell" data-state="確認待ち"><span class="badge badge-review">確認待ち</span></div>
+      <div class="dpg-cell" data-state="完了"><span class="badge badge-done">完了</span></div>
+      <div class="dpg-cell" data-state="保留"><span class="badge badge-hold">保留</span></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">タブ <small>.tabs / .tab / 詳細</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell dpg-wide" data-state="通常(1つ目を選択中)">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab is-active" role="tab" aria-selected="true">✅ タスク</button>
+          <button type="button" class="tab" role="tab" aria-selected="false">🕒 やりとり</button>
+          <button type="button" class="tab" role="tab" aria-selected="false">📎 ファイル</button>
+        </div>
+      </div>
+      <div class="dpg-cell" data-state="ホバー"><div class="tabs"><button type="button" class="tab is-hover">🕒 やりとり</button></div></div>
+      <div class="dpg-cell" data-state="フォーカス"><div class="tabs"><button type="button" class="tab is-focus">🕒 やりとり</button></div></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">表 <small>.table / 一覧</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell dpg-wide" data-state="通常">
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>案件名</th><th>取引先</th><th>状態</th><th>納期</th><th class="num">金額</th></tr></thead>
+            <tbody>
+              <tr><td><a href="detail.html">店舗サイトのリニューアル</a></td><td>かもめベーカリー</td><td><span class="badge badge-progress">進行中</span></td><td>12/18</td><td class="num">¥480,000</td></tr>
+              <tr><td><a href="detail.html">採用パンフレット</a></td><td>北栄運輸</td><td><span class="badge badge-review">確認待ち</span></td><td>11/28</td><td class="num">¥220,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="dpg-cell dpg-wide" data-state="空"><p class="empty is-shown">😢 データがありません</p></div>
+      <div class="dpg-cell dpg-missing" data-state="読み込み中"></div>
+      <div class="dpg-cell dpg-missing" data-state="エラー"></div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">カード <small>.card / 一覧・詳細・設定</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell dpg-wide" data-state="通常">
+        <div class="card"><h2 class="section-title">🏢 事業者情報</h2><p>屋号や連絡先など、請求書に載る情報です。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">モーダル <small>.modal-backdrop / .modal / 一覧・詳細・設定</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell dpg-stage" data-state="入力つき・エラーあり">
+        <div class="modal-backdrop is-open">
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sm1">
+            <h2 class="modal-title" id="sm1">💰 請求書を作成</h2>
+            <div class="field"><label class="label" for="sm1a">金額(税抜)</label><input class="input" id="sm1a" type="text" value="480000"></div>
+            <div class="field"><label class="label" for="sm1b">送付先メールアドレス</label><input class="input is-invalid" id="sm1b" type="email" aria-invalid="true"><p class="error">無効な入力です</p></div>
+            <div class="modal-actions"><button type="button" class="btn">キャンセル</button><button type="button" class="btn btn-primary">作成する ✨</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="dpg-cell dpg-stage" data-state="確認(危険な操作)">
+        <div class="modal-backdrop is-open">
+          <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="sm2">
+            <h2 class="modal-title" id="sm2">⚠️ 本当に削除しますか?</h2>
+            <p>この操作は取り消せません!</p>
+            <div class="modal-actions"><button type="button" class="btn">キャンセル</button><button type="button" class="btn btn-danger">OK</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dpg-part">
+    <h2 class="dpg-part-name">お知らせ <small>.toast / 保存後に表示</small></h2>
+    <div class="dpg-grid">
+      <div class="dpg-cell" data-state="表示中"><div class="toast is-shown">保存しました</div></div>
+    </div>
+  </section>
+</div>
+
+<script src="toggle-snippet.js" data-polish-href="polish.css"></script>
+</body>
+</html>
