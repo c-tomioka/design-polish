@@ -36,19 +36,19 @@ It works with React, Vue, Svelte, Tailwind, and plain HTML/CSS. It does not requ
 Put the `skills/design-polish` folder where Claude Code looks for skills.
 
 ```bash
-git clone https://github.com/c-tomioka/design-polish-poc.git
+git clone https://github.com/c-tomioka/design-polish.git
 ```
 
 To use it in every project, put it in `~/.claude/skills/`.
 
 ```bash
-cp -r design-polish-poc/skills/design-polish ~/.claude/skills/
+cp -r design-polish/skills/design-polish ~/.claude/skills/
 ```
 
 To use it in one project only, put it in that project's `.claude/skills/`.
 
 ```bash
-mkdir -p .claude/skills && cp -r /path/to/design-polish-poc/skills/design-polish .claude/skills/
+mkdir -p .claude/skills && cp -r /path/to/design-polish/skills/design-polish .claude/skills/
 ```
 
 This repository already contains a symlink from `.claude/skills/design-polish` to `skills/design-polish`, so you can open the repository in Claude Code and try the skill right away.
@@ -68,7 +68,7 @@ There are five examples.
 You can view them in three ways.
 
 1. **Images in this README.** The table above shows before and after screenshots.
-2. **GitHub Pages.** The comparison viewer opens at <https://c-tomioka.github.io/design-polish-poc/>, provided Pages is set to publish from the `/docs` folder of the `main` branch in the repository settings.
+2. **GitHub Pages.** The comparison viewer opens at <https://c-tomioka.github.io/design-polish/>, provided Pages is set to publish from the `/docs` folder of the `main` branch in the repository settings.
 3. **Locally.** Clone the repository and open `docs/index.html` in a browser. No server and no build step.
 
 In the comparison viewer you can:

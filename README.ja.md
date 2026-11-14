@@ -34,19 +34,19 @@ React、Vue、Svelte、Tailwind、素のHTML/CSSに対応します。画像生�
 `skills/design-polish` フォルダを、Claude Code のスキル置き場に置きます。
 
 ```bash
-git clone https://github.com/c-tomioka/design-polish-poc.git
+git clone https://github.com/c-tomioka/design-polish.git
 ```
 
 すべてのプロジェクトで使う場合は `~/.claude/skills/` に置きます。
 
 ```bash
-cp -r design-polish-poc/skills/design-polish ~/.claude/skills/
+cp -r design-polish/skills/design-polish ~/.claude/skills/
 ```
 
 特定のプロジェクトだけで使う場合は、そのプロジェクトの `.claude/skills/` に置きます。
 
 ```bash
-mkdir -p .claude/skills && cp -r /path/to/design-polish-poc/skills/design-polish .claude/skills/
+mkdir -p .claude/skills && cp -r /path/to/design-polish/skills/design-polish .claude/skills/
 ```
 
 このリポジトリ自体には、`.claude/skills/design-polish` から `skills/design-polish` へのシンボリックリンクが入っています。リポジトリを Claude Code で開けば、そのままスキルを試せます。
@@ -66,7 +66,7 @@ mkdir -p .claude/skills && cp -r /path/to/design-polish-poc/skills/design-polish
 見方は3通りあります。
 
 1. **この README の画像**:上の表が修正前後のスクリーンショットです
-2. **GitHub Pages**:<https://c-tomioka.github.io/design-polish-poc/> で比較ビューアが開きます(リポジトリの設定で、Pages の公開元を `main` ブランチの `/docs` にした場合)
+2. **GitHub Pages**:<https://c-tomioka.github.io/design-polish/> で比較ビューアが開きます(リポジトリの設定で、Pages の公開元を `main` ブランチの `/docs` にした場合)
 3. **ローカル**:リポジトリを取得し、`docs/index.html` をブラウザで開きます。サーバーもビルドも要りません
 
 比較ビューアでは、次のことができます。
