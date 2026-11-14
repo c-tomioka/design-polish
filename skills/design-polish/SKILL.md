@@ -1,6 +1,6 @@
 ---
 name: "design-polish"
-description: "決断が入っていない画面(初期値や定型がそのまま残り、どこかで見たように見える画面)を、デザイナーが手直ししたような画面に改善する。作り手は問わない。「デザインを良くして」「AIっぽさを消したい」「垢抜けさせて」「UIを磨いて」「見た目がダサい・安っぽい」などの依頼や、既存画面のコード・スクリーンショット・URLを渡されて見た目の改善を求められたときは必ず使う。1画面でも、部品を共有する複数ページのサイトでも使える。React、Vue、Svelte、Tailwind、素のHTML/CSSに対応。外部ツール不要。"
+description: "Improve screens where no design decisions were made (defaults and stock patterns left as they came, so the screen looks like one you have seen before) so that they read as if a designer had reworked them. It does not matter who or what built the screen. Always use this for requests such as 'make this look better', 'it looks AI-generated', 'polish the UI', or 'this looks cheap / generic', and whenever you are given the code, a screenshot, or a URL of an existing screen and asked to improve how it looks. Also use it for the same requests in Japanese: 「デザインを良くして」「AIっぽさを消したい」「垢抜けさせて」「UIを磨いて」「見た目がダサい・安っぽい」. Works on a single screen or on a multi-page site that shares components. Supports React, Vue, Svelte, Tailwind, and plain HTML/CSS. No external tools required."
 license: "MIT"
 metadata:
   version: "0.0.1"

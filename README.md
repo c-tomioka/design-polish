@@ -33,6 +33,18 @@ It works with React, Vue, Svelte, Tailwind, and plain HTML/CSS. It does not requ
 
 ## Install
 
+### With the `skills` command
+
+If you have Node.js, one line installs it.
+
+```bash
+npx skills add c-tomioka/design-polish
+```
+
+The command asks which agent to install it for and whether to install it for every project or only the current one.
+
+### By hand
+
 Put the `skills/design-polish` folder where Claude Code looks for skills.
 
 ```bash

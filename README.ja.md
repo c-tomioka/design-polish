@@ -31,6 +31,18 @@ React、Vue、Svelte、Tailwind、素のHTML/CSSに対応します。画像生�
 
 ## 導入
 
+### `skills` コマンドで入れる
+
+Node.js があれば、次の1行で導入できます。
+
+```bash
+npx skills add c-tomioka/design-polish
+```
+
+入れる先のエージェントと、範囲(すべてのプロジェクトか、今のプロジェクトだけか)は、実行中の質問で選びます。
+
+### 手で置く
+
 `skills/design-polish` フォルダを、Claude Code のスキル置き場に置きます。
 
 ```bash
