@@ -165,7 +165,7 @@ CHANGELOG.md            変更履歴
 
 ## バージョン
 
-現在のバージョンは 0.0.1 です。`skills/design-polish/SKILL.md` の `metadata.version` に書いてあり、手元に置いたスキルの版はそこで確かめられます。変更の記録は [CHANGELOG.md](CHANGELOG.md) にあります。
+現在のバージョンは 0.0.2 です。`skills/design-polish/SKILL.md` の `metadata.version` に書いてあり、手元に置いたスキルの版はそこで確かめられます。変更の記録は [CHANGELOG.md](CHANGELOG.md) にあります。
 
 ## ライセンス
 

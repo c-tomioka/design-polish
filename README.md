@@ -167,7 +167,7 @@ CHANGELOG.md            Change history (Japanese)
 
 ## Version
 
-The current version is 0.0.1. It is written in `metadata.version` in `skills/design-polish/SKILL.md`, which is where you can check the version of a copy you have installed. Changes are recorded in [CHANGELOG.md](CHANGELOG.md).
+The current version is 0.0.2. It is written in `metadata.version` in `skills/design-polish/SKILL.md`, which is where you can check the version of a copy you have installed. Changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
